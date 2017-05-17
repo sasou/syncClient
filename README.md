@@ -1,8 +1,16 @@
 # syncClient
 syncClient，阿里canal数据同步到kafka的中间件！
+
 本项目是打通canal、kafka的桥梁；
 canal解析binlog的数据，由syncClient订阅，然后实时推送到kafka；如果kafka服务异常，syncClient会回滚操作；canal、kafka异常退出，都不会影响数据的传输；
 
+使用场景(基于日志增量订阅&消费支持的业务)：
+数据库镜像
+数据库实时备份
+多级索引 (分库索引)
+search build
+业务cache刷新
+价格变化等重要业务消息
 
 目录：
 bin：已编译二进制项目，可以直接使用；

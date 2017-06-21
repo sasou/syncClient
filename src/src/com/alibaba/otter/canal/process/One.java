@@ -1,4 +1,5 @@
 package com.alibaba.otter.canal.process;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class One {
     private static CanalConnector connector = null;
     private static int debug = 0;
     
-	public static void main(String args[]) {
+	public static void run() {
 	    // 创建链接
 		GetProperties.getProperties();
 		debug = GetProperties.debug;
@@ -43,21 +44,22 @@ public class One {
         props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         
-	    connector = CanalConnectors.newSingleConnector(new InetSocketAddress(GetProperties.ip,
-	    		GetProperties.port), GetProperties.destination, GetProperties.username, GetProperties.password);
 	    int batchSize = 1000;
 	    int emptyCount = 0;
+	    connector = CanalConnectors.newSingleConnector(new InetSocketAddress(GetProperties.ip,
+	    		GetProperties.port), GetProperties.destination, GetProperties.username, GetProperties.password);
+	    
+    	connector.connect();
+        if (!"".equals(GetProperties.filter)) {
+        	connector.subscribe(GetProperties.filter);
+        } else {
+        	connector.subscribe();
+        }
+        
+        connector.rollback();
+
 	    try {
-	        connector.connect();
-	        if (!"".equals(GetProperties.filter)) {
-	        	connector.subscribe(GetProperties.filter);
-	        } else {
-	        	connector.subscribe();
-	        }
-	        
-	        connector.rollback();
 	        producer = new KafkaProducer<>(props);
-	        
 	        while (true) {
 	            Message message = connector.getWithoutAck(batchSize); // 获取指定数量的数据
 	            long batchId = message.getId();
@@ -89,8 +91,25 @@ public class One {
 	            }
 	        }
 	    } finally {
-	        connector.disconnect();
+	    	if (connector != null) {
+	    		connector.disconnect();
+	    		connector = null;
+	    	}
+	    	if (connector != null) {
+		    	producer.close();
+		    	producer = null;
+	    	}
 	    }
+	}
+    
+	public static void main(String args[]) {
+		while (true) {
+			try {
+				run();
+			} catch (Exception e) {
+				System.out.println("run error");
+			}
+		}
 	}
 
 	private static boolean syncEntry(List<Entry> entrys) {

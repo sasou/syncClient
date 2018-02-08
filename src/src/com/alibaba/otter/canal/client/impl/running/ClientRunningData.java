@@ -3,7 +3,7 @@ package com.alibaba.otter.canal.client.impl.running;
 /**
  * client running状态信息
  * 
- * @author gene @ 2017-05-05
+ * @author jianghang 2012-11-22 下午03:41:50
  * @version 1.0.0
  */
 public class ClientRunningData {

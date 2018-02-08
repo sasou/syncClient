@@ -17,18 +17,21 @@ src：源代码；
 
 **配置说明：**
 
-#client  
-debug=1           # 是否开始调试：1未开启，0为关闭（线上运行请关闭）  
-ip=127.0.0.1      # canal 服务端 ip  
-port=11111        # canal 服务端 端口：默认11111  
-destination=one   # canal 服务端 项目  
-username=         # canal 用户名：默认为空  
-password=         # canal 密码：默认为空  
-filter=           # canal 同步表设置，默认空使用canal配置；  
+#common  
+system_debug=1          # 是否开始调试：1未开启，0为关闭（线上运行请关闭）  
 
-#kafka  
-kafkaIp=          # kafka 服务端 ip  
-kafkaPort=        # kafka 端口：默认9092；  
+#canal
+canal_ip=127.0.0.1      # canal 服务端 ip;  
+canal_port=11111        # canal 服务端 端口：默认11111;  
+canal_destination=one   # canal 服务端项目，多个用逗号分隔，如：one,two;
+canal_username=         # canal 用户名：默认为空;  
+canal_password=         # canal 密码：默认为空;  
+canal_filter=           # canal 同步表设置，默认空使用canal配置; 
+
+#kafka or redis
+target_type=kafka           # 同步插件类型 kafka or redis 
+target_ip=              # kafka 服务端 ip;  
+target_port=            # kafka 端口：默认9092;   
 
 ---
 

@@ -9,7 +9,7 @@ import com.alibaba.otter.canal.client.CanalNodeAccessStrategy;
 /**
  * 简单版本的node访问实现
  * 
- * @author gene @ 2017-05-05
+ * @author jianghang 2012-10-29 下午08:00:23
  * @version 1.0.0
  */
 public class SimpleNodeAccessStrategy implements CanalNodeAccessStrategy {

@@ -26,7 +26,7 @@ import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 /**
  * clinet running控制
  * 
- * @author gene @ 2017-05-05
+ * @author jianghang 2012-11-22 下午03:43:01
  * @version 1.0.0
  */
 public class ClientRunningMonitor extends AbstractCanalLifeCycle {

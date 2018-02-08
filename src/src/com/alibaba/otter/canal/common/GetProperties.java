@@ -4,62 +4,74 @@ import java.util.Properties;
 
 import com.alibaba.otter.canal.common.ReadProperties;
 
-public class GetProperties {		
-	    //client配置
-		public static int debug = 0;
-		public static String ip = "127.0.0.1";
-		public static int port = 11111;
-		public static String destination = "";
-		public static String username = "";
-		public static String password = "";
-		public static String filter = "";
-		
-	    //kafak配置
-		public static String kafkaIp = "127.0.0.1";
-		public static int kafkaPort = 9092;
+/**
+ * config
+ * 
+ * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
+ * @version 1.0.0
+ */
 
+public class GetProperties {
+	// debug
+	public static int system_debug = 0;
+	// canal
+	public static String canal_ip = "127.0.0.1";
+	public static int canal_port = 11111;
+	public static String[] canal_destination = null;
+	public static String canal_username = "";
+	public static String canal_password = "";
+	public static String canal_filter = "";
 
-		public static void getProperties() {		
-			//读取资源配置文件
-			ReadProperties readProperties = new ReadProperties();		
-			Properties p = readProperties.readProperties();	
-			String tmp = "";
-			
-			//client配置
-			
-			tmp = String.valueOf(p.get("debug"));
-			if (!"".equals(tmp)) {
-				debug =  Integer.parseInt(tmp);
-			}
-			
-			tmp = String.valueOf(p.get("ip"));
-			if (!"".equals(tmp)) {
-				ip = tmp;
-			}
+	// target
+	public static String target_type = "kafka";
+	public static String target_ip = "127.0.0.1";
+	public static int target_port = 9092;
 
-			tmp = String.valueOf(p.get("port"));
-			if (!"".equals(tmp)) {
-				port =  Integer.parseInt(tmp);
-			}
-			
-			destination = String.valueOf(p.get("destination"));
-			username = String.valueOf(p.get("username"));
-			password = String.valueOf(p.get("password"));
-			
-			tmp = String.valueOf(p.get("filter"));
-			if (!"".equals(tmp)) {
-				filter = tmp;
-			}
-			
-			//kafak配置
-			tmp = String.valueOf(p.get("kafkaIp"));
-			if (!"".equals(tmp)) {
-				kafkaIp = tmp;
-			}
-			tmp = String.valueOf(p.get("kafkaPort"));
-			if (!"".equals(tmp)) {
-				kafkaPort =  Integer.parseInt(tmp);
-			}
-			
+	public static void getProperties() {
+		// read config
+		ReadProperties readProperties = new ReadProperties();
+		Properties p = readProperties.readProperties();
+		String tmp = "";
+
+		// debug
+		tmp = String.valueOf(p.get("system_debug"));
+		if (!"".equals(tmp)) {
+			system_debug = Integer.parseInt(tmp);
 		}
+
+		// canal
+		tmp = String.valueOf(p.get("canal_ip"));
+		if (!"".equals(tmp)) {
+			canal_ip = tmp;
+		}
+
+		tmp = String.valueOf(p.get("canal_port"));
+		if (!"".equals(tmp)) {
+			canal_port = Integer.parseInt(tmp);
+		}
+
+		canal_destination = String.valueOf(p.get("canal_destination")).split(",");
+		canal_username = String.valueOf(p.get("canal_username"));
+		canal_password = String.valueOf(p.get("canal_password"));
+
+		tmp = String.valueOf(p.get("canal_filter"));
+		if (!"".equals(tmp)) {
+			canal_filter = tmp;
+		}
+
+		// target
+		tmp = String.valueOf(p.get("target_type"));
+		if (!"".equals(tmp)) {
+			target_type = tmp;
+		}
+		tmp = String.valueOf(p.get("target_ip"));
+		if (!"".equals(tmp)) {
+			target_ip = tmp;
+		}
+		tmp = String.valueOf(p.get("target_port"));
+		if (!"".equals(tmp)) {
+			target_port = Integer.parseInt(tmp);
+		}
+
+	}
 }

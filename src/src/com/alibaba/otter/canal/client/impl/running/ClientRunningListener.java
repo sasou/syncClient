@@ -5,7 +5,7 @@ import java.net.InetSocketAddress;
 /**
  * 触发一下mainstem发生切换
  * 
- * @author gene @ 2017-05-05
+ * @author jianghang 2012-9-11 下午02:26:03
  * @version 1.0.0
  */
 public interface ClientRunningListener {

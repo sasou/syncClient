@@ -70,10 +70,6 @@ public class Kafka implements Runnable {
 				long batchId = message.getId();
 				int size = message.getEntries().size();
 				if (!(batchId == -1 || size == 0)) {;
-					if (system_debug > 0) {
-						System.out.printf(thread_name + "message[batchId=%s,size=%s] \n", batchId, size);
-					}
-
 					if (syncEntry(message.getEntries())) {
 						connector.ack(batchId); // commit
 					} else {

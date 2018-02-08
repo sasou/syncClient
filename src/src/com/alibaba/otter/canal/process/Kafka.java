@@ -45,7 +45,7 @@ public class Kafka implements Runnable {
 		system_debug = GetProperties.system_debug;
 		Properties props = new Properties();
 		props.put("bootstrap.servers", GetProperties.target_ip + ":" + GetProperties.target_port);
-		props.put("client.id", thread_name + "_Producer");
+		props.put("client.id", canal_destination + "_Producer");
 		props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
 		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 

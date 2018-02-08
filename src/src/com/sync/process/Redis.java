@@ -1,16 +1,11 @@
-package com.alibaba.otter.canal.process;
+package com.sync.process;
 
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.Message;
@@ -20,34 +15,33 @@ import com.alibaba.otter.canal.protocol.CanalEntry.EntryType;
 import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
-import com.alibaba.otter.canal.common.GetProperties;
+import com.sync.common.GetProperties;
+import com.sync.common.RedisApi;
+
+import redis.clients.jedis.exceptions.JedisConnectionException;
+
 import com.alibaba.fastjson.JSON;
 
 /**
- * kafka Producer
+ * Redis Producer
  * 
  * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
  */
-public class Kafka implements Runnable {
-	private KafkaProducer<Integer, String> producer;
+public class Redis implements Runnable {
+	private RedisApi RedisPool = null;
 	private CanalConnector connector = null;
 	private int system_debug = 0;
 	private String thread_name = null;
 	private String canal_destination = null;
 
-	public Kafka(String name) {
+	public Redis(String name) {
 		thread_name = "canal[" + name + "]:";
 		canal_destination = name;
 	}
 
 	public void process() {
 		system_debug = GetProperties.system_debug;
-		Properties props = new Properties();
-		props.put("bootstrap.servers", GetProperties.target_ip + ":" + GetProperties.target_port);
-		props.put("client.id", canal_destination + "_Producer");
-		props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
-		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
 		int batchSize = 1000;
 		connector = CanalConnectors.newSingleConnector(
@@ -64,7 +58,7 @@ public class Kafka implements Runnable {
 		connector.rollback();
 
 		try {
-			producer = new KafkaProducer<>(props);
+			RedisPool = new RedisApi();
 			while (true) {
 				Message message = connector.getWithoutAck(batchSize); // get batch num
 				long batchId = message.getId();
@@ -83,10 +77,6 @@ public class Kafka implements Runnable {
 				connector.disconnect();
 				connector = null;
 			}
-			if (producer != null) {
-				producer.close();
-				producer = null;
-			}
 		}
 	}
 
@@ -103,7 +93,6 @@ public class Kafka implements Runnable {
 	private boolean syncEntry(List<Entry> entrys) {
 		String topic = "";
 		int no = 0;
-		RecordMetadata metadata = null;
 		boolean ret = true;
 		for (Entry entry : entrys) {
 			if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN
@@ -141,16 +130,14 @@ public class Kafka implements Runnable {
 				}
 				String text = JSON.toJSONString(data);
 				try {
-					metadata = producer.send(new ProducerRecord<>(topic, no, text)).get();
-					if (metadata == null) {
-						ret = false;
-					}
+					RedisPool.rpush(topic, text);
 					if (system_debug > 0) {
 						System.out.println(thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
-				} catch (InterruptedException | ExecutionException e) {
+					ret = true;
+				} catch (Exception e) {
 					if (system_debug > 0) {
-						System.out.println(thread_name + "kafka sent message failure!");
+						System.out.println(thread_name + "redis link failure!");
 					}
 					ret = false;
 				}

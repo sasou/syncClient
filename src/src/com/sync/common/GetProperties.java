@@ -1,8 +1,8 @@
-package com.alibaba.otter.canal.common;
+package com.sync.common;
 
 import java.util.Properties;
 
-import com.alibaba.otter.canal.common.ReadProperties;
+import com.sync.common.ReadProperties;
 
 /**
  * config

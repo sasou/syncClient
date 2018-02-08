@@ -8,8 +8,7 @@ import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 /**
  * canal数据操作客户端
  * 
- * @author zebin.xuzb @ 2012-6-19
- * @author jianghang
+ * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
  */
 public interface CanalConnector {

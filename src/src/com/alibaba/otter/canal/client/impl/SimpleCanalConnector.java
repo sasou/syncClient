@@ -45,7 +45,7 @@ import com.google.protobuf.ByteString;
 /**
  * 基于{@linkplain CanalServerWithNetty}定义的网络协议接口，对于canal数据进行get/rollback/ack等操作
  * 
- * @author jianghang 2012-10-24 下午05:37:20
+ * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
  */
 public class SimpleCanalConnector implements CanalConnector {

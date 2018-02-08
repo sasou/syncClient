@@ -5,7 +5,7 @@ import java.net.InetSocketAddress;
 /**
  * 触发一下mainstem发生切换
  * 
- * @author jianghang 2012-9-11 下午02:26:03
+ * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
  */
 public interface ClientRunningListener {

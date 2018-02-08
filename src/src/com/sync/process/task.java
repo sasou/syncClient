@@ -1,6 +1,6 @@
-package com.alibaba.otter.canal.process;
+package com.sync.process;
 
-import com.alibaba.otter.canal.common.GetProperties;
+import com.sync.common.GetProperties;
 
 /**
  * config file read
@@ -22,7 +22,7 @@ public final class task {
 						new Thread(new Kafka(GetProperties.canal_destination[i])).start();
 						break;
 					case "redis":
-						System.out.println("error:not support type!");
+						new Thread(new Redis(GetProperties.canal_destination[i])).start();
 						break;
 					default:
 						System.out.println("error:not support type!");

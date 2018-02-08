@@ -14,7 +14,7 @@ import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 /**
  * 集群版本connector实现，自带了failover功能<br/>
  * 
- * @author jianghang 2012-10-29 下午08:04:06
+ * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
  */
 public class ClusterCanalConnector implements CanalConnector {

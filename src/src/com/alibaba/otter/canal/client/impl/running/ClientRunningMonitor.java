@@ -24,9 +24,9 @@ import com.alibaba.otter.canal.common.zookeeper.ZookeeperPathUtils;
 import com.alibaba.otter.canal.protocol.exception.CanalClientException;
 
 /**
- * clinet running控制
+ * clinet running
  * 
- * @author jianghang 2012-11-22 下午03:43:01
+ * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
  */
 public class ClientRunningMonitor extends AbstractCanalLifeCycle {

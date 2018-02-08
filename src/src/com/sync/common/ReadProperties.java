@@ -1,4 +1,4 @@
-package com.alibaba.otter.canal.common;
+package com.sync.common;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;

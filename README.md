@@ -20,7 +20,7 @@ src：源代码；
 #common  
 system_debug=1          # 是否开始调试：1未开启，0为关闭（线上运行请关闭）  
 
-#canal
+#canal  
 canal_ip=127.0.0.1      # canal 服务端 ip;  
 canal_port=11111        # canal 服务端 端口：默认11111;  
 canal_destination=one   # canal 服务端项目，多个用逗号分隔，如：one,two;  

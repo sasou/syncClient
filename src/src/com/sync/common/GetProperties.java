@@ -68,10 +68,12 @@ public class GetProperties {
 		if (!"".equals(tmp)) {
 			target_ip = tmp;
 		}
+		if ("redis".equals(target_type)) {
+			target_port = 6379;
+		}
 		tmp = String.valueOf(p.get("target_port"));
 		if (!"".equals(tmp)) {
 			target_port = Integer.parseInt(tmp);
 		}
-
 	}
 }

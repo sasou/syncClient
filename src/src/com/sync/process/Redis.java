@@ -1,6 +1,5 @@
 package com.sync.process;
 
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +16,6 @@ import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
 import com.sync.common.GetProperties;
 import com.sync.common.RedisApi;
-
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import com.alibaba.fastjson.JSON;
 
@@ -63,12 +60,11 @@ public class Redis implements Runnable {
 				Message message = connector.getWithoutAck(batchSize); // get batch num
 				long batchId = message.getId();
 				int size = message.getEntries().size();
-				if (!(batchId == -1 || size == 0)) {;
+				if (!(batchId == -1 || size == 0)) {
 					if (syncEntry(message.getEntries())) {
 						connector.ack(batchId); // commit
 					} else {
 						connector.rollback(batchId); // rollback
-						System.out.println(thread_name + "parser of eromanga-event has an error");
 					}
 				}
 			}
@@ -134,7 +130,6 @@ public class Redis implements Runnable {
 					if (system_debug > 0) {
 						System.out.println(thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
-					ret = true;
 				} catch (Exception e) {
 					if (system_debug > 0) {
 						System.out.println(thread_name + "redis link failure!");
@@ -158,6 +153,13 @@ public class Redis implements Runnable {
 			list.add(one);
 		}
 		return list;
+	}
+
+	protected void finalize() throws Throwable {
+		if (connector != null) {
+			connector.disconnect();
+			connector = null;
+		}
 	}
 
 }

@@ -1,6 +1,5 @@
 package com.sync.common;
 
-import java.net.ConnectException;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +17,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 public class RedisApi {
 
-	private JedisPool pool = null;
+	private static JedisPool pool = null;
 
 	public RedisApi() {
 		JedisPoolConfig config = new JedisPoolConfig();

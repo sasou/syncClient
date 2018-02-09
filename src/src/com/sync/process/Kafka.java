@@ -69,12 +69,11 @@ public class Kafka implements Runnable {
 				Message message = connector.getWithoutAck(batchSize); // get batch num
 				long batchId = message.getId();
 				int size = message.getEntries().size();
-				if (!(batchId == -1 || size == 0)) {;
+				if (!(batchId == -1 || size == 0)) {
 					if (syncEntry(message.getEntries())) {
 						connector.ack(batchId); // commit
 					} else {
 						connector.rollback(batchId); // rollback
-						System.out.println(thread_name + "parser of eromanga-event has an error");
 					}
 				}
 			}
@@ -150,7 +149,7 @@ public class Kafka implements Runnable {
 					}
 				} catch (InterruptedException | ExecutionException e) {
 					if (system_debug > 0) {
-						System.out.println(thread_name + "kafka sent message failure!");
+						System.out.println(thread_name + "kafka link failure!");
 					}
 					ret = false;
 				}
@@ -171,6 +170,13 @@ public class Kafka implements Runnable {
 			list.add(one);
 		}
 		return list;
+	}
+	
+	protected void finalize() throws Throwable {
+		if (connector != null) {
+			connector.disconnect();
+			connector = null;
+		}
 	}
 
 }

@@ -49,10 +49,84 @@ search build
 Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的kafka主题名为：sync_admin_user  
 Topic数据字段：
 
+	插入数据：
+    {
+        "head": {
+            "binlog_pos": 53036,
+            "type": "INSERT",
+            "binlog_file": "mysql-bin.000173",
+            "db": "sdsw",
+            "table": "sys_log"
+        },
+        "after": [
+            {
+                "name": "log_id",
+                "update": true,
+                "value": "1"
+            },
+            {
+                "name": "log_ip",
+                "update": true,
+                "value": "27.17.47.100"
+            },
+            {
+                "name": "log_addtime",
+                "update": true,
+                "value": "1494204717"
+            }
+        ]
+    }
+	
+	修改数据：
     {
         "head": {
             "binlog_pos": 53036,
             "type": "UPDATE",
+            "binlog_file": "mysql-bin.000173",
+            "db": "sdsw",
+            "table": "sys_log"
+        },
+        "before": [
+            {
+                "name": "log_id",
+                "update": false,
+                "value": "1"
+            },
+            {
+                "name": "log_ip",
+                "update": false,
+                "value": "27.17.47.202"
+            },
+            {
+                "name": "log_addtime",
+                "update": false,
+                "value": "1494204717"
+            }
+        ],
+        "after": [
+            {
+                "name": "log_id",
+                "update": false,
+                "value": "1"
+            },
+            {
+                "name": "log_ip",
+                "update": true,
+                "value": "27.17.47.100"
+            },
+            {
+                "name": "log_addtime",
+                "update": false,
+                "value": "1494204717"
+            }
+        ]
+    }
+	
+	删除数据：
+    {
+        "head": {
+            "binlog_pos": 53036,
+            "type": "DELETE",
             "binlog_file": "mysql-bin.000173",
             "db": "sdsw",
             "table": "sys_log"

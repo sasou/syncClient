@@ -46,40 +46,46 @@ search build
 
 **Kafka：**
 
-Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的主题名为：sync_admin_user
+Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的主题名为：sync_admin_user  
 Topic数据字段：
-{
-    "head": {
-        "binlog_pos": 53036,
-        "type": "UPDATE",
-        "binlog_file": "mysql-bin.000173",
-        "db": "sdsw",
-        "table": "sys_log"
-    },
-    "before": [
-        {
-            "name": "log_id",
-            "update": false,
-            "value": "1"
+
+    {
+        "head": {
+            "binlog_pos": 53036,
+            "type": "UPDATE",
+            "binlog_file": "mysql-bin.000173",
+            "db": "sdsw",
+            "table": "sys_log"
         },
-        {
-            "name": "log_ip",
-            "update": false,
-            "value": "27.17.47.202"
-        },
-        {
-            "name": "log_addtime",
-            "update": false,
-            "value": "1494204717"
-        }
-    ]
-}
+        "before": [
+            {
+                "name": "log_id",
+                "update": false,
+                "value": "1"
+            },
+            {
+                "name": "log_ip",
+                "update": false,
+                "value": "27.17.47.202"
+            },
+            {
+                "name": "log_addtime",
+                "update": false,
+                "value": "1494204717"
+            }
+        ]
+    }
 
 head.type 类型：INSERT（插入）、UPDATE（修改）、DELETE（删除）； 
+
 head.db 数据库； 
+
 head.table 数据库表；
+
 head.binlog_pos  日志位置； 
+
 head.binlog_file 日志文件；  
 
 before： INSERT（插入）、UPDATE（修改）、DELETE（删除）操作下的数据；  
+
 after：  UPDATE（修改）操作下的数据；  

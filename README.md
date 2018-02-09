@@ -46,7 +46,7 @@ search build
 
 **Kafka：**
 
-Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的主题名为：sync_admin_user  
+Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的kafka主题名为：sync_admin_user  
 Topic数据字段：
 
     {
@@ -89,3 +89,8 @@ head.binlog_file 日志文件；  
 before： INSERT（插入）、UPDATE（修改）、DELETE（删除）操作下的数据；  
 
 after：  UPDATE（修改）操作下的数据；  
+
+
+**Redis：**
+
+List规则：数据库的每个表有单独的list，如数据库admin的user表，对应的redis list名为：sync_admin_user  

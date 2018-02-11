@@ -16,10 +16,11 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
  */
 
 public class RedisApi {
-
+	private String canal_destination = null;
 	private static JedisPool pool = null;
 
-	public RedisApi() {
+	public RedisApi(String name) {
+		canal_destination = name;
 		JedisPoolConfig config = new JedisPoolConfig();
 		// 控制一个pool可分配多少个jedis实例，通过pool.getResource()来获取；
 		// 如果赋值为-1，则表示不限制；如果pool已经分配了maxActive个jedis实例，则此时pool的状态为exhausted(耗尽)。
@@ -38,8 +39,7 @@ public class RedisApi {
 		config.setBlockWhenExhausted(true);
 
 		config.setMinEvictableIdleTimeMillis(300000);
-
-		pool = new JedisPool(config, GetProperties.target_ip, GetProperties.target_port, 1000 * 10);
+		pool = new JedisPool(config, GetProperties.target.get(canal_destination).ip, GetProperties.target.get(canal_destination).port, 1000 * 10);
 	}
 
 	/**

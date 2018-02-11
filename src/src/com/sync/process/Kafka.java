@@ -21,6 +21,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
 import com.sync.common.GetProperties;
+import com.sync.common.WriteLog;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -32,7 +33,6 @@ import com.alibaba.fastjson.JSON;
 public class Kafka implements Runnable {
 	private KafkaProducer<Integer, String> producer;
 	private CanalConnector connector = null;
-	private int system_debug = 0;
 	private String thread_name = null;
 	private String canal_destination = null;
 
@@ -42,21 +42,20 @@ public class Kafka implements Runnable {
 	}
 
 	public void process() {
-		system_debug = GetProperties.system_debug;
 		Properties props = new Properties();
-		props.put("bootstrap.servers", GetProperties.target_ip + ":" + GetProperties.target_port);
+		props.put("bootstrap.servers", GetProperties.target.get(canal_destination).ip + ":" + GetProperties.target.get(canal_destination).port);
 		props.put("client.id", canal_destination + "_Producer");
 		props.put("key.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
 		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
 		int batchSize = 1000;
 		connector = CanalConnectors.newSingleConnector(
-				new InetSocketAddress(GetProperties.canal_ip, GetProperties.canal_port), canal_destination,
-				GetProperties.canal_username, GetProperties.canal_password);
+				new InetSocketAddress(GetProperties.canal.ip, GetProperties.canal.port), canal_destination,
+				GetProperties.canal.username, GetProperties.canal.password);
 
 		connector.connect();
-		if (!"".equals(GetProperties.canal_filter)) {
-			connector.subscribe(GetProperties.canal_filter);
+		if (!"".equals(GetProperties.canal.filter)) {
+			connector.subscribe(GetProperties.canal.filter);
 		} else {
 			connector.subscribe();
 		}
@@ -65,6 +64,7 @@ public class Kafka implements Runnable {
 
 		try {
 			producer = new KafkaProducer<>(props);
+			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
 				Message message = connector.getWithoutAck(batchSize); // get batch num
 				long batchId = message.getId();
@@ -94,7 +94,7 @@ public class Kafka implements Runnable {
 			try {
 				process();
 			} catch (Exception e) {
-				System.out.println(thread_name + "canal link failure!");
+				WriteLog.write(canal_destination, thread_name + "canal link failure!");
 			}
 		}
 	}
@@ -144,13 +144,11 @@ public class Kafka implements Runnable {
 					if (metadata == null) {
 						ret = false;
 					}
-					if (system_debug > 0) {
-						System.out.println(thread_name + "data(" + topic + "," + no + ", " + text + ")");
+					if (GetProperties.system_debug > 0) {
+						WriteLog.write(canal_destination, thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (InterruptedException | ExecutionException e) {
-					if (system_debug > 0) {
-						System.out.println(thread_name + "kafka link failure!");
-					}
+					WriteLog.write(canal_destination, thread_name + "kafka link failure!");
 					ret = false;
 				}
 			}

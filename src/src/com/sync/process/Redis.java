@@ -16,7 +16,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
 import com.sync.common.GetProperties;
 import com.sync.common.RedisApi;
-
+import com.sync.common.WriteLog;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -28,7 +28,6 @@ import com.alibaba.fastjson.JSON;
 public class Redis implements Runnable {
 	private RedisApi RedisPool = null;
 	private CanalConnector connector = null;
-	private int system_debug = 0;
 	private String thread_name = null;
 	private String canal_destination = null;
 
@@ -38,16 +37,14 @@ public class Redis implements Runnable {
 	}
 
 	public void process() {
-		system_debug = GetProperties.system_debug;
-
 		int batchSize = 1000;
 		connector = CanalConnectors.newSingleConnector(
-				new InetSocketAddress(GetProperties.canal_ip, GetProperties.canal_port), canal_destination,
-				GetProperties.canal_username, GetProperties.canal_password);
+				new InetSocketAddress(GetProperties.canal.ip, GetProperties.canal.port), canal_destination,
+				GetProperties.canal.username, GetProperties.canal.password);
 
 		connector.connect();
-		if (!"".equals(GetProperties.canal_filter)) {
-			connector.subscribe(GetProperties.canal_filter);
+		if (!"".equals(GetProperties.canal.filter)) {
+			connector.subscribe(GetProperties.canal.filter);
 		} else {
 			connector.subscribe();
 		}
@@ -55,7 +52,8 @@ public class Redis implements Runnable {
 		connector.rollback();
 
 		try {
-			RedisPool = new RedisApi();
+			RedisPool = new RedisApi(canal_destination);
+			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
 				Message message = connector.getWithoutAck(batchSize); // get batch num
 				long batchId = message.getId();
@@ -81,7 +79,7 @@ public class Redis implements Runnable {
 			try {
 				process();
 			} catch (Exception e) {
-				System.out.println(thread_name + "canal link failure!");
+				WriteLog.write(canal_destination, thread_name + "canal link failure!");
 			}
 		}
 	}
@@ -95,7 +93,6 @@ public class Redis implements Runnable {
 					|| entry.getEntryType() == EntryType.TRANSACTIONEND) {
 				continue;
 			}
-
 			RowChange rowChage = null;
 			try {
 				rowChage = RowChange.parseFrom(entry.getStoreValue());
@@ -127,13 +124,11 @@ public class Redis implements Runnable {
 				String text = JSON.toJSONString(data);
 				try {
 					RedisPool.rpush(topic, text);
-					if (system_debug > 0) {
-						System.out.println(thread_name + "data(" + topic + "," + no + ", " + text + ")");
+					if (GetProperties.system_debug > 0) {
+						WriteLog.write(canal_destination, thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (Exception e) {
-					if (system_debug > 0) {
-						System.out.println(thread_name + "redis link failure!");
-					}
+					WriteLog.write(canal_destination, thread_name + "redis link failure!");
 					ret = false;
 				}
 			}

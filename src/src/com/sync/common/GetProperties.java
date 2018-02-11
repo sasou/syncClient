@@ -1,5 +1,7 @@
 package com.sync.common;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import com.sync.common.ReadProperties;
@@ -15,65 +17,73 @@ public class GetProperties {
 	// debug
 	public static int system_debug = 0;
 	// canal
-	public static String canal_ip = "127.0.0.1";
-	public static int canal_port = 11111;
-	public static String[] canal_destination = null;
-	public static String canal_username = "";
-	public static String canal_password = "";
-	public static String canal_filter = "";
+	public static CanalData canal = new CanalData();
 
 	// target
-	public static String target_type = "kafka";
-	public static String target_ip = "127.0.0.1";
-	public static int target_port = 9092;
+	public static Map<String, TargetData> target = new HashMap<String, TargetData>();
 
-	public static void getProperties() {
+	public GetProperties() {
 		// read config
 		ReadProperties readProperties = new ReadProperties();
 		Properties p = readProperties.readProperties();
 		String tmp = "";
 
 		// debug
-		tmp = String.valueOf(p.get("system_debug"));
+		tmp = String.valueOf(p.get("system.debug"));
 		if (!"".equals(tmp)) {
 			system_debug = Integer.parseInt(tmp);
 		}
-
+		
 		// canal
-		tmp = String.valueOf(p.get("canal_ip"));
+		tmp = String.valueOf(p.get("canal.ip"));
 		if (!"".equals(tmp)) {
-			canal_ip = tmp;
+			canal.setIp(tmp);
 		}
 
-		tmp = String.valueOf(p.get("canal_port"));
+		tmp = String.valueOf(p.get("canal.port"));
 		if (!"".equals(tmp)) {
-			canal_port = Integer.parseInt(tmp);
+			canal.setPort(Integer.parseInt(tmp));
 		}
+		canal.setDestination(String.valueOf(p.get("canal.destination")));
+		canal.setUsername(String.valueOf(p.get("canal.username")));
+		canal.setPassword(String.valueOf(p.get("canal.password")));
 
-		canal_destination = String.valueOf(p.get("canal_destination")).split(",");
-		canal_username = String.valueOf(p.get("canal_username"));
-		canal_password = String.valueOf(p.get("canal_password"));
-
-		tmp = String.valueOf(p.get("canal_filter"));
+		tmp = String.valueOf(p.get("canal.filter"));
 		if (!"".equals(tmp)) {
-			canal_filter = tmp;
+			canal.setFilter(tmp);
 		}
 
 		// target
-		tmp = String.valueOf(p.get("target_type"));
-		if (!"".equals(tmp)) {
-			target_type = tmp;
-		}
-		tmp = String.valueOf(p.get("target_ip"));
-		if (!"".equals(tmp)) {
-			target_ip = tmp;
-		}
-		if ("redis".equals(target_type)) {
-			target_port = 6379;
-		}
-		tmp = String.valueOf(p.get("target_port"));
-		if (!"".equals(tmp)) {
-			target_port = Integer.parseInt(tmp);
+		if (canal.destination != null) {
+			int num = canal.destination.length;
+			if (num > 0) {
+				for (int i = 0; i < num; i++) {
+					TargetData target_tmp = new TargetData();
+
+					tmp = String.valueOf(p.get(canal.destination[i] + ".target_type"));
+					if (!"".equals(tmp)) {
+						target_tmp.setType(tmp);
+					}
+					tmp = String.valueOf(p.get(canal.destination[i] + ".target_ip"));
+					if (!"".equals(tmp)) {
+						target_tmp.setIp(tmp);
+					}
+					if ("kafka".equals(target_tmp.type)) {
+						target_tmp.setPort(9092);
+					}
+					if ("redis".equals(target_tmp.type)) {
+						target_tmp.setPort(6379);
+					}
+					if ("elasticsearch".equals(target_tmp.type)) {
+						target_tmp.setPort(9200);
+					}
+					tmp = String.valueOf(p.get(canal.destination[i] + ".target_port"));
+					if (!"".equals(tmp)) {
+						target_tmp.setPort(Integer.parseInt(tmp));
+					}
+					target.put(canal.destination[i], target_tmp);
+				}
+			}
 		}
 	}
 }

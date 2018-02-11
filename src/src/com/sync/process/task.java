@@ -29,6 +29,9 @@ public final class task {
 					case "redis":
 						new Thread(new Redis(GetProperties.canal.destination[i])).start();
 						break;
+					case "elasticsearch":
+						new Thread(new ElasticSearch(GetProperties.canal.destination[i])).start();
+						break;
 					default:
 						System.out.println("error:not support type!");
 						break;

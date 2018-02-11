@@ -9,6 +9,7 @@ package com.sync.common;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -22,10 +23,14 @@ import java.util.Calendar;
  * @author tower
  */
 public class WriteLog {
+	public static String base = null;
 
 	public static void write(String type, String logString) {
+		if (base == null) {
+			base = System.getProperty("user.dir");
+		}
 		// 日志路径
-		String current = "/logs/";
+		String current = base + "\\logs\\";
 		try {
 			String logFilePathName = null;
 			Calendar cd = Calendar.getInstance();
@@ -36,27 +41,24 @@ public class WriteLog {
 			String min = addZero(cd.get(Calendar.MINUTE));
 			String sec = addZero(cd.get(Calendar.SECOND));
 			current += year + "-" + month + "-" + day + "/";
-
+			
 			File fileParentDir = new File(current);
 			if (!fileParentDir.exists()) {
-				fileParentDir.mkdir();
+				fileParentDir.mkdirs();
 			}
 
 			logFilePathName = current + type + ".log";
 
-			PrintWriter printWriter = new PrintWriter(
-					new OutputStreamWriter(new FileOutputStream(logFilePathName, true), "GB2312"));
-
+			FileOutputStream fos = new FileOutputStream(logFilePathName, true);
 			String time = "[" + year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec + "] ";
-			printWriter.println(time + logString + "\n\n");
-			printWriter.flush();
-			printWriter.close();
+			String content = time + logString + "\n\n";
+			fos.write(content.getBytes());
+			fos.flush();
+			fos.close();
 			if (GetProperties.system_debug > 0) {
 				System.out.println(logString);
 			}
-		} catch (FileNotFoundException e) {
-			e.getMessage();
-		} catch (UnsupportedEncodingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

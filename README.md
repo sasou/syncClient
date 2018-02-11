@@ -18,20 +18,26 @@ src：源代码；
 **配置说明：**
 
 #common  
-system_debug=1          # 是否开始调试：1未开启，0为关闭（线上运行请关闭）  
+system.debug=1          # 是否开始调试：1未开启，0为关闭（线上运行请关闭）  
 
 #canal  
-canal_ip=127.0.0.1      # canal 服务端 ip;  
-canal_port=11111        # canal 服务端 端口：默认11111;  
-canal_destination=one   # canal 服务端项目，多个用逗号分隔，如：one,two;  
-canal_username=         # canal 用户名：默认为空;   
-canal_password=         # canal 密码：默认为空;  
-canal_filter=           # canal 同步表设置，默认空使用canal配置;  
+canal.ip=127.0.0.1      # canal 服务端 ip;  
+canal.port=11111        # canal 服务端 端口：默认11111;  
+canal.destination=one   # canal 服务端项目（destinations），多个用逗号分隔，如：one,two;  
+canal.username=         # canal 用户名：默认为空;   
+canal.password=         # canal 密码：默认为空;  
+canal.filter=           # canal 同步filter设置，默认空使用canal配置;  
 
-#kafka or redis  
-target_type=kafka       # 同步插件类型 kafka or redis  
-target_ip=              # kafka 服务端 ip;   
-target_port=            # kafka 端口：默认9092;    
+#kafka or redis 服务配置，前缀对应canal.destination的多个destinations;
+#redis
+sdsw.target_type=redis  # 同步插件类型 kafka or redis  
+sdsw.target_ip=         # kafka 服务端 ip;   
+sdsw.target_port=       # kafka 端口：默认9092;   
+
+#kafka
+epos.target_type=kafka  # kafka 端口：默认9092;   
+epos.target_ip=         # kafka 端口：默认9092;   
+epos.target_port=       # kafka 端口：默认9092;   
 
 ---
 
@@ -47,7 +53,7 @@ search build
 **Kafka：**
 
 Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的kafka主题名为：sync_admin_user  
-Topic数据字段：
+Topic数据字段：  
 
 	插入数据：
     {
@@ -160,9 +166,9 @@ head.binlog_pos  日志位置；
 
 head.binlog_file 日志文件；  
 
-before： INSERT（插入）、UPDATE（修改）、DELETE（删除）操作下的数据；  
+before： UPDATE（修改前）、DELETE（删除前）的数据；  
 
-after：  UPDATE（修改）操作下的数据；  
+after：  INSERT（插入后）、UPDATE（修改后）的数据；  
 
 
 **Redis：**

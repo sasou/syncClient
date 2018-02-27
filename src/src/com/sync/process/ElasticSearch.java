@@ -66,6 +66,8 @@ public class ElasticSearch implements Runnable {
 					}
 				}
 			}
+		} catch (Exception e) {
+			WriteLog.write(canal_destination, thread_name + "elasticsearch link failure!");
 		} finally {
 			if (connector != null) {
 				connector.disconnect();
@@ -123,7 +125,7 @@ public class ElasticSearch implements Runnable {
 				}
 				String text = JSON.toJSONString(data);
 				try {
-					es.insert(topic, text);
+					ret = es.sync(topic, text);
 					if (GetProperties.system_debug > 0) {
 						WriteLog.write(canal_destination, thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}

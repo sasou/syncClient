@@ -1,7 +1,6 @@
 package com.sync.process;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,14 +111,18 @@ public class ElasticSearch implements Runnable {
 			head.put("table", entry.getHeader().getTableName());
 			head.put("type", eventType);
 			data.put("head", head);
+			
 			topic = "sync_" + entry.getHeader().getSchemaName() + "_" + entry.getHeader().getTableName();
 			no = (int) entry.getHeader().getLogfileOffset();
 			for (RowData rowData : rowChage.getRowDatasList()) {
 				if (eventType == EventType.DELETE) {
+					head.put("id", getIndex(rowData.getBeforeColumnsList()));
 					data.put("before", makeColumn(rowData.getBeforeColumnsList()));
 				} else if (eventType == EventType.INSERT) {
+					head.put("id", getIndex(rowData.getAfterColumnsList()));
 					data.put("after", makeColumn(rowData.getAfterColumnsList()));
 				} else {
+					head.put("id", getIndex(rowData.getAfterColumnsList()));
 					data.put("before", makeColumn(rowData.getBeforeColumnsList()));
 					data.put("after", makeColumn(rowData.getAfterColumnsList()));
 				}
@@ -130,7 +133,7 @@ public class ElasticSearch implements Runnable {
 						WriteLog.write(canal_destination, thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (Exception e) {
-					WriteLog.write(canal_destination, thread_name + "redis link failure!");
+					WriteLog.write(canal_destination, thread_name + e.getMessage());
 					ret = false;
 				}
 			}
@@ -139,17 +142,24 @@ public class ElasticSearch implements Runnable {
 		}
 		return ret;
 	}
-
-	private List<Map<String, Object>> makeColumn(List<Column> columns) {
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+	
+	private String getIndex(List<Column> columns) {
+		String ret = "";
 		for (Column column : columns) {
-			Map<String, Object> one = new HashMap<String, Object>();
-			one.put("name", column.getName());
-			one.put("value", column.getValue());
-			one.put("update", column.getUpdated());
-			list.add(one);
+			if (column.getIsKey()) {
+				ret = (String) column.getValue().toString();
+				break;
+			}
 		}
-		return list;
+		return ret;
+	}
+
+	private Map<String, Object> makeColumn(List<Column> columns) {
+		Map<String, Object> one = new HashMap<String, Object>();
+		for (Column column : columns) {
+			one.put(column.getName(), column.getValue());
+		}
+		return one;
 	}
 
 	protected void finalize() throws Throwable {

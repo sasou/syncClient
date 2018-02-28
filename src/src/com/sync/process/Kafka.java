@@ -1,7 +1,6 @@
 package com.sync.process;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,16 +157,12 @@ public class Kafka implements Runnable {
 		return ret;
 	}
 
-	private List<Map<String, Object>> makeColumn(List<Column> columns) {
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+	private Map<String, Object> makeColumn(List<Column> columns) {
+		Map<String, Object> one = new HashMap<String, Object>();
 		for (Column column : columns) {
-			Map<String, Object> one = new HashMap<String, Object>();
-			one.put("name", column.getName());
-			one.put("value", column.getValue());
-			one.put("update", column.getUpdated());
-			list.add(one);
+			one.put(column.getName(), column.getValue());
 		}
-		return list;
+		return one;
 	}
 	
 	protected void finalize() throws Throwable {

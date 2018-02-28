@@ -1,9 +1,13 @@
 package com.sync.process;
 
 import java.net.InetSocketAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.time.DateFormatUtils;
+
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.Message;
@@ -159,6 +163,8 @@ public class ElasticSearch implements Runnable {
 		for (Column column : columns) {
 			one.put(column.getName(), column.getValue());
 		}
+		String pattern = "yyyy/MM/dd HH:mm:ss";
+		one.put("@timestamp", DateFormatUtils.format(new Date(), pattern));
 		return one;
 	}
 

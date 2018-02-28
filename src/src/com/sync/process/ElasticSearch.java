@@ -13,24 +13,24 @@ import com.alibaba.otter.canal.protocol.CanalEntry.EntryType;
 import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
+import com.sync.common.EsApi;
 import com.sync.common.GetProperties;
-import com.sync.common.RedisApi;
 import com.sync.common.WriteLog;
 import com.alibaba.fastjson.JSON;
 
 /**
- * Redis Producer
+ * ElasticSearch Producer
  * 
  * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
  */
-public class Redis implements Runnable {
-	private RedisApi RedisPool = null;
+public class ElasticSearch implements Runnable {
+	private EsApi es = null;
 	private CanalConnector connector = null;
 	private String thread_name = null;
 	private String canal_destination = null;
 
-	public Redis(String name) {
+	public ElasticSearch(String name) {
 		thread_name = "canal[" + name + "]:";
 		canal_destination = name;
 	}
@@ -51,7 +51,7 @@ public class Redis implements Runnable {
 		connector.rollback();
 
 		try {
-			RedisPool = new RedisApi(canal_destination);
+			es = new EsApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
 				Message message = connector.getWithoutAck(batchSize); // get batch num
@@ -65,6 +65,8 @@ public class Redis implements Runnable {
 					}
 				}
 			}
+		} catch (Exception e) {
+			WriteLog.write(canal_destination, thread_name + "elasticsearch link failure!");
 		} finally {
 			if (connector != null) {
 				connector.disconnect();
@@ -109,30 +111,45 @@ public class Redis implements Runnable {
 			head.put("table", entry.getHeader().getTableName());
 			head.put("type", eventType);
 			data.put("head", head);
+			
 			topic = "sync_" + entry.getHeader().getSchemaName() + "_" + entry.getHeader().getTableName();
 			no = (int) entry.getHeader().getLogfileOffset();
 			for (RowData rowData : rowChage.getRowDatasList()) {
 				if (eventType == EventType.DELETE) {
+					head.put("id", getIndex(rowData.getBeforeColumnsList()));
 					data.put("before", makeColumn(rowData.getBeforeColumnsList()));
 				} else if (eventType == EventType.INSERT) {
+					head.put("id", getIndex(rowData.getAfterColumnsList()));
 					data.put("after", makeColumn(rowData.getAfterColumnsList()));
 				} else {
+					head.put("id", getIndex(rowData.getAfterColumnsList()));
 					data.put("before", makeColumn(rowData.getBeforeColumnsList()));
 					data.put("after", makeColumn(rowData.getAfterColumnsList()));
 				}
 				String text = JSON.toJSONString(data);
 				try {
-					RedisPool.rpush(topic, text);
+					ret = es.sync(topic, text);
 					if (GetProperties.system_debug > 0) {
 						WriteLog.write(canal_destination, thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (Exception e) {
-					WriteLog.write(canal_destination, thread_name + "redis link failure!");
+					WriteLog.write(canal_destination, thread_name + e.getMessage());
 					ret = false;
 				}
 			}
 			data.clear();
 			data = null;
+		}
+		return ret;
+	}
+	
+	private String getIndex(List<Column> columns) {
+		String ret = "";
+		for (Column column : columns) {
+			if (column.getIsKey()) {
+				ret = (String) column.getValue().toString();
+				break;
+			}
 		}
 		return ret;
 	}

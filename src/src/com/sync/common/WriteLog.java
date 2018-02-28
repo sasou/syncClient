@@ -7,12 +7,7 @@ package com.sync.common;
  * @version 1.0.0
  */
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 
 /**
@@ -29,7 +24,7 @@ public class WriteLog {
 		if (base == null) {
 			base = System.getProperty("user.dir");
 		}
-		// 日志路径
+
 		String current = base + "\\logs\\";
 		try {
 			String logFilePathName = null;
@@ -41,7 +36,7 @@ public class WriteLog {
 			String min = addZero(cd.get(Calendar.MINUTE));
 			String sec = addZero(cd.get(Calendar.SECOND));
 			current += year + "-" + month + "-" + day + "/";
-			
+
 			File fileParentDir = new File(current);
 			if (!fileParentDir.exists()) {
 				fileParentDir.mkdirs();

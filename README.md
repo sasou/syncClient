@@ -1,10 +1,10 @@
 ### **syncClient**
 
->   syncClient，数据实时同步中间件（阿里canal到kafka、redis）！
+>   syncClient，数据实时同步中间件（阿里canal到kafka、redis、elasticsearch）！
 
  本项目是打通canal、kafka的桥梁；  
  基本原理：  
- canal解析binlog的数据，由syncClient订阅，然后实时推送到kafka或者redis；如果kafka、redis服务异常，syncClient会回滚操作；canal、kafka、redis异常退出，都不会影响数据的传输；
+ canal解析binlog的数据，由syncClient订阅，然后实时推送到kafka或者redis、elasticsearch；如果kafka、redis服务异常，syncClient会回滚操作；canal、kafka、redis异常退出，都不会影响数据的传输；
 
 
 ---
@@ -39,6 +39,11 @@ epos.target_type=kafka  # kafka 端口：默认9092;
 epos.target_ip=         # kafka 端口：默认9092;   
 epos.target_port=       # kafka 端口：默认9092;   
 
+#elasticsearch  
+es.target_type=elasticsearch  
+es.target_ip=10.5.3.66  
+es.target_port=  
+
 ---
 
 **使用场景(基于日志增量订阅&消费支持的业务)：**
@@ -66,19 +71,13 @@ Topic数据字段：
         },
         "after": [
             {
-                "name": "log_id",
-                "update": true,
-                "value": "1"
+                "log_id": "1",
             },
             {
-                "name": "log_ip",
-                "update": true,
-                "value": "27.17.47.100"
+                "log_ip": "27.17.47.100",
             },
             {
-                "name": "log_addtime",
-                "update": true,
-                "value": "1494204717"
+                "log_addtime": "1494204717",
             }
         ]
     }
@@ -94,36 +93,24 @@ Topic数据字段：
         },
         "before": [
             {
-                "name": "log_id",
-                "update": false,
-                "value": "1"
+                "log_id": "1",
             },
             {
-                "name": "log_ip",
-                "update": false,
-                "value": "27.17.47.202"
+                "log_ip": "27.17.47.100",
             },
             {
-                "name": "log_addtime",
-                "update": false,
-                "value": "1494204717"
+                "log_addtime": "1494204717",
             }
         ],
         "after": [
             {
-                "name": "log_id",
-                "update": false,
-                "value": "1"
+                "log_id": "1",
             },
             {
-                "name": "log_ip",
-                "update": true,
-                "value": "27.17.47.100"
+                "log_ip": "27.17.47.1",
             },
             {
-                "name": "log_addtime",
-                "update": false,
-                "value": "1494204717"
+                "log_addtime": "1494204717",
             }
         ]
     }
@@ -139,19 +126,13 @@ Topic数据字段：
         },
         "before": [
             {
-                "name": "log_id",
-                "update": false,
-                "value": "1"
+                "log_id": "1",
             },
             {
-                "name": "log_ip",
-                "update": false,
-                "value": "27.17.47.202"
+                "log_ip": "27.17.47.1",
             },
             {
-                "name": "log_addtime",
-                "update": false,
-                "value": "1494204717"
+                "log_addtime": "1494204717",
             }
         ]
     }
@@ -174,3 +155,7 @@ after：  INSERT（插入后）、UPDATE（修改后）的数据；
 **Redis：**
 
 List规则：数据库的每个表有单独的list，如数据库admin的user表，对应的redis list名为：sync_admin_user  
+
+**Elasticsearch**
+
+规则：同步index = sync，如数据库admin的user表，对应的Elasticsearch type名为：admin_user    

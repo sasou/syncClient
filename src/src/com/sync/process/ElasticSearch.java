@@ -1,9 +1,14 @@
 package com.sync.process;
 
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.time.DateFormatUtils;
+
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.Message;
@@ -156,12 +161,32 @@ public class ElasticSearch implements Runnable {
 
 	private Map<String, Object> makeColumn(List<Column> columns) {
 		Map<String, Object> one = new HashMap<String, Object>();
+		String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 		for (Column column : columns) {
-			one.put(column.getName(), column.getValue());
+			String mt = column.getMysqlType();
+			if (mt.contains("timestamp") || mt.contains("datetime")) {
+				if (!"".equals(column.getValue())) {
+					Date date = stringToDate(column.getValue());
+					one.put(column.getName(), DateFormatUtils.format(date, pattern) + "+0800");
+				}
+			} else {
+				one.put(column.getName(), column.getValue());
+			}
 		}
+		one.put("@timestamp", DateFormatUtils.format(new Date(), pattern) + "+0800");
 		return one;
 	}
 
+    public static Date stringToDate(String source) {
+    	SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = simpleDateFormat.parse(source);
+        } catch (Exception e) {
+        }
+        return date;
+    }
+		
 	protected void finalize() throws Throwable {
 		if (connector != null) {
 			connector.disconnect();

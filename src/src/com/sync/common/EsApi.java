@@ -53,7 +53,7 @@ public final class EsApi {
 	    	text = (String) data.get("after").toString();
 		    if (!"".equals(text)) {
 		    	try {
-					return insert("sync", db + "_"+ table, id, text);
+					return insert("sync" + "-" + db + "-"+ table, "default", id, text);
 				} catch (Exception e) {
 					throw new Exception("elasticsearch insert fail", e);
 				}
@@ -63,7 +63,7 @@ public final class EsApi {
 	    	text = (String) data.get("after").toString();
 		    if (!"".equals(id)) {
 		    	try {
-					return update("sync", db + "_"+ table, id, text);
+					return update("sync" + "-" + db + "-"+ table, "default", id, text);
 				} catch (Exception e) {
 					throw new Exception("elasticsearch update fail", e);
 				}
@@ -72,7 +72,7 @@ public final class EsApi {
 	    case "DELETE":
 		    if (!"".equals(id)) {
 		    	try {
-					return delete("sync", db + "_"+ table, id);
+					return delete("sync" + "-" + db + "-"+ table, "default", id);
 				} catch (Exception e) {
 					
 				}
@@ -101,9 +101,12 @@ public final class EsApi {
 	 * @throws Exception 
 	 */
 	public boolean insert(String index, String type, String id, String content) throws Exception {
+		if (!index("sync-sdsw-sys_log")) {
+			System.out.println(setMappings("sync-sdsw-sys_log"));
+		}
 		Map<String, String> params = Collections.emptyMap();
 		HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
-		Response response = rs.performRequest("POST", index + "/" + type + "/" + id, params, entity); 
+		Response response = rs.performRequest("PUT", "/" + index + "/" + type + "/" + id, params, entity); 
 		String ret = (String) EntityUtils.toString(response.getEntity());
 		return ret.contains("created") || ret.contains("updated");
 	}
@@ -116,9 +119,12 @@ public final class EsApi {
 	 * @throws Exception 
 	 */
 	public boolean update(String index, String type, String id, String content) throws Exception {
+		if (!index("sync-sdsw-sys_log")) {
+			System.out.println(setMappings("sync-sdsw-sys_log"));
+		}
 		Map<String, String> params = Collections.emptyMap();
 		HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
-		Response response = rs.performRequest("PUT", index + "/" + type + "/" + id, params, entity); 
+		Response response = rs.performRequest("PUT", "/" + index + "/" + type + "/" + id, params, entity); 
 		String ret = (String) EntityUtils.toString(response.getEntity());
 		return ret.contains("created") || ret.contains("updated");
 	}
@@ -144,7 +150,7 @@ public final class EsApi {
 	 */
 	public String get(String index, String type, String id) throws Exception {
 		try {
-		   Response response = rs.performRequest("GET", index + "/" + type + "/" + id, Collections.singletonMap("pretty", "true"));
+		   Response response = rs.performRequest("GET", "/" + index + "/" + type + "/" + id, Collections.singletonMap("pretty", "true"));
 	        return EntityUtils.toString(response.getEntity());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -165,5 +171,34 @@ public final class EsApi {
 		}
 		return false;
 	}
+	
+	/**
+	 * @param index
+	 * @throws IOException 
+	 */
+	public String getMappings(String index) throws Exception {
+		try {
+			Response response = rs.performRequest("GET", "/" + index + "/_mappings", Collections.<String, String>emptyMap());
+	        return EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			
+		}
+		return "";
+	}
 
+	/**
+	 * @param index
+	 * @throws IOException 
+	 */
+	public String setMappings(String index) throws Exception {
+		try {
+			HttpEntity entity = new NStringEntity("{\"mappings\":{\"default\" :{\"properties\":{\"@timestamp\":{\"type\" : \"date\"}}}}}", ContentType.APPLICATION_JSON);
+			Response response = rs.performRequest("PUT", "/" + index, Collections.emptyMap(), entity);
+	        return EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
 }

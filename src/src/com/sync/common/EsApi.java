@@ -101,9 +101,12 @@ public final class EsApi {
 	 * @throws Exception 
 	 */
 	public boolean insert(String index, String type, String id, String content) throws Exception {
+		if (!index("sync-sdsw-sys_log")) {
+			System.out.println(setMappings("sync-sdsw-sys_log"));
+		}
 		Map<String, String> params = Collections.emptyMap();
 		HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
-		Response response = rs.performRequest("POST", "/" + index + "/" + type + "/" + id, params, entity); 
+		Response response = rs.performRequest("PUT", "/" + index + "/" + type + "/" + id, params, entity); 
 		String ret = (String) EntityUtils.toString(response.getEntity());
 		return ret.contains("created") || ret.contains("updated");
 	}
@@ -116,6 +119,9 @@ public final class EsApi {
 	 * @throws Exception 
 	 */
 	public boolean update(String index, String type, String id, String content) throws Exception {
+		if (!index("sync-sdsw-sys_log")) {
+			System.out.println(setMappings("sync-sdsw-sys_log"));
+		}
 		Map<String, String> params = Collections.emptyMap();
 		HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
 		Response response = rs.performRequest("PUT", "/" + index + "/" + type + "/" + id, params, entity); 
@@ -165,5 +171,34 @@ public final class EsApi {
 		}
 		return false;
 	}
+	
+	/**
+	 * @param index
+	 * @throws IOException 
+	 */
+	public String getMappings(String index) throws Exception {
+		try {
+			Response response = rs.performRequest("GET", "/" + index + "/_mappings", Collections.<String, String>emptyMap());
+	        return EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			
+		}
+		return "";
+	}
 
+	/**
+	 * @param index
+	 * @throws IOException 
+	 */
+	public String setMappings(String index) throws Exception {
+		try {
+			HttpEntity entity = new NStringEntity("{\"mappings\":{\"default\" :{\"properties\":{\"@timestamp\":{\"type\" : \"date\"}}}}}", ContentType.APPLICATION_JSON);
+			Response response = rs.performRequest("PUT", "/" + index, Collections.emptyMap(), entity);
+	        return EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
 }

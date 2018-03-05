@@ -1,7 +1,7 @@
 package com.sync.common;
 
 /**
- * TargetData
+ * WriteLog
  * 
  * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
@@ -11,10 +11,9 @@ import java.io.FileOutputStream;
 import java.util.Calendar;
 
 /**
- * 写日志 写logString字符串到./log目录下的文件中
+ * write logString
  * 
  * @param logString
- *            日志字符串
  * @author tower
  */
 public class WriteLog {
@@ -25,7 +24,7 @@ public class WriteLog {
 			base = System.getProperty("user.dir");
 		}
 
-		String current = base + "\\logs\\";
+		String current = base + "/logs/";
 		try {
 			String logFilePathName = null;
 			Calendar cd = Calendar.getInstance();
@@ -46,7 +45,7 @@ public class WriteLog {
 
 			FileOutputStream fos = new FileOutputStream(logFilePathName, true);
 			String time = "[" + year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec + "] ";
-			String content = time + logString + "\n\n";
+			String content = time + logString + "\r\n";
 			fos.write(content.getBytes());
 			fos.flush();
 			fos.close();
@@ -59,7 +58,7 @@ public class WriteLog {
 	}
 
 	/**
-	 * 整数i小于10则前面补0
+	 * add 0
 	 * 
 	 * @param i
 	 * @return

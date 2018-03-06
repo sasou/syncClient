@@ -60,7 +60,7 @@ search build
 Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的kafka主题名为：sync_admin_user  
 Topic数据字段：  
 
-	插入数据：
+	插入数据同步格式：
     {
         "head": {
             "binlog_pos": 53036,
@@ -82,7 +82,7 @@ Topic数据字段：
         ]
     }
 	
-	修改数据：
+	修改数据同步格式：
     {
         "head": {
             "binlog_pos": 53036,
@@ -115,7 +115,7 @@ Topic数据字段：
         ]
     }
 	
-	删除数据：
+	删除数据同步格式：
     {
         "head": {
             "binlog_pos": 53036,
@@ -158,4 +158,13 @@ List规则：数据库的每个表有单独的list，如数据库admin的user表
 
 **Elasticsearch**
 
-规则：同步index = sync，如数据库admin的user表，对应的Elasticsearch type名为：admin_user    
+规则：数据库的每个表有单独的Elasticsearch index，如数据库admin的user表，对应的es index名为：sync_admin_user, index type 为default;
+
+Elasticsearch同步数据的head中有id字段；  
+
+Mysql 同步到 Elasticsearch注意事项：
+
+1、表需要有一个唯一id主键；  
+2、表时间字段datetime会转为es的时间字段，其他字段对应es的文本类型；
+3、主键、时间字段禁止修改，其他字段尽量提前规划好；  
+

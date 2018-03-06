@@ -135,10 +135,10 @@ public class ElasticSearch implements Runnable {
 				try {
 					ret = es.sync(topic, text);
 					if (GetProperties.system_debug > 0) {
-						WriteLog.write(canal_destination, thread_name + "data(" + topic + "," + no + ", " + text + ")");
+						WriteLog.write(canal_destination + ".access", thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (Exception e) {
-					WriteLog.write(canal_destination, thread_name + e.getMessage());
+					WriteLog.write(canal_destination + ".error", thread_name + e.getMessage());
 					ret = false;
 				}
 			}

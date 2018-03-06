@@ -9,7 +9,7 @@ import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
- * config
+ * RedisApi
  * 
  * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0
@@ -22,28 +22,18 @@ public class RedisApi {
 	public RedisApi(String name) {
 		canal_destination = name;
 		JedisPoolConfig config = new JedisPoolConfig();
-		// 控制一个pool可分配多少个jedis实例，通过pool.getResource()来获取；
-		// 如果赋值为-1，则表示不限制；如果pool已经分配了maxActive个jedis实例，则此时pool的状态为exhausted(耗尽)。
 		config.setMaxTotal(1000);
-		// 控制一个pool最多有多少个状态为idle(空闲的)的jedis实例。
 		config.setMaxIdle(50);
-		// 表示当borrow(引入)一个jedis实例时，最大的等待时间，如果超过等待时间，则直接抛出JedisConnectionException；
 		config.setMaxWaitMillis(1000 * 10);
-
-		// 在获取连接的时候检查有效性, 默认false
 		config.setTestOnBorrow(false);
-		// 在空闲时检查有效性, 默认false
 		config.setTestWhileIdle(false);
-
-		// 连接耗尽时是否阻塞, false报异常,ture阻塞直到超时, 默认true
 		config.setBlockWhenExhausted(true);
-
 		config.setMinEvictableIdleTimeMillis(300000);
 		pool = new JedisPool(config, GetProperties.target.get(canal_destination).ip, GetProperties.target.get(canal_destination).port, 1000 * 10);
 	}
 
 	/**
-	 * 返还到连接池
+	 * return Resource to pool
 	 * 
 	 * @param pool
 	 * @param redis
@@ -55,7 +45,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 获取数据
+	 * get data
 	 * 
 	 * @param key
 	 * @return
@@ -74,7 +64,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 获取Set数据
+	 * zrange data
 	 * 
 	 * @param key
 	 * @return
@@ -94,7 +84,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 获取数据
+	 * lrange data
 	 * 
 	 * @param key
 	 * @return
@@ -114,7 +104,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 写String数据
+	 * set string
 	 * 
 	 * @param key
 	 * @return
@@ -132,7 +122,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 写set数据
+	 * set data
 	 * 
 	 * @param key
 	 * @return
@@ -150,7 +140,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 写List数据 左添加
+	 * push list in left
 	 * 
 	 * @param key
 	 * @return
@@ -167,7 +157,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 写List数据 右添加
+	 * push list in right
 	 * 
 	 * @param key
 	 * @return
@@ -184,7 +174,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 写数据
+	 * exists
 	 * 
 	 * @param key
 	 * @return
@@ -204,7 +194,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 写数据
+	 * del
 	 * 
 	 * @param key
 	 * @return
@@ -221,7 +211,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 删除List元素
+	 * lrem
 	 * 
 	 * @param key
 	 * @return
@@ -238,7 +228,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 删除set元素
+	 * zrem
 	 * 
 	 * @param key
 	 * @return
@@ -255,11 +245,10 @@ public class RedisApi {
 	}
 
 	/**
-	 * 设置过期时间
+	 * expire
 	 * 
 	 * @param key
 	 * @param num
-	 *            过期时间 分钟
 	 */
 	public void expire(String key, int num) throws Exception {
 		Jedis jedis = null;
@@ -273,7 +262,7 @@ public class RedisApi {
 	}
 
 	/**
-	 * 执行+1操作
+	 * incr 1
 	 * 
 	 * @param key
 	 */
@@ -289,10 +278,9 @@ public class RedisApi {
 	}
 
 	/**
-	 * 清空
+	 * clear
 	 * 
 	 * @param num
-	 *            过期时间 分钟
 	 */
 	public void clear() throws Exception {
 		Jedis jedis = null;

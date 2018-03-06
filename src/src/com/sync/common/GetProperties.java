@@ -7,7 +7,7 @@ import java.util.Properties;
 import com.sync.common.ReadProperties;
 
 /**
- * config
+ * GetProperties
  * 
  * @author sasou <admin@php-gene.com> web:http://www.php-gene.com/
  * @version 1.0.0

@@ -124,10 +124,10 @@ public class Redis implements Runnable {
 				try {
 					RedisPool.rpush(topic, text);
 					if (GetProperties.system_debug > 0) {
-						WriteLog.write(canal_destination, thread_name + "data(" + topic + "," + no + ", " + text + ")");
+						WriteLog.write(canal_destination + ".access", thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (Exception e) {
-					WriteLog.write(canal_destination, thread_name + "redis link failure!");
+					WriteLog.write(canal_destination + ".error", thread_name + "redis link failure!");
 					ret = false;
 				}
 			}

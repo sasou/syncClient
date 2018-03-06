@@ -44,8 +44,6 @@ public final class EsApi {
 		Map<String,Object> data = jsonToMap(content);
 		Map<String,Object> head = jsonToMap((String) data.get("head").toString());
 	    String type = (String) head.get("type").toString();
-	    String db = (String) head.get("db").toString();
-	    String table = (String) head.get("table").toString();
 	    String id = (String) head.get("id").toString();
 	    String text = "";
 	    switch(type) {
@@ -53,7 +51,7 @@ public final class EsApi {
 	    	text = (String) data.get("after").toString();
 		    if (!"".equals(text)) {
 		    	try {
-					return insert("sync" + "-" + db + "-"+ table, "default", id, text);
+					return insert(index, "default", id, text);
 				} catch (Exception e) {
 					throw new Exception("elasticsearch insert fail", e);
 				}
@@ -63,7 +61,7 @@ public final class EsApi {
 	    	text = (String) data.get("after").toString();
 		    if (!"".equals(id)) {
 		    	try {
-					return update("sync" + "-" + db + "-"+ table, "default", id, text);
+					return update(index, "default", id, text);
 				} catch (Exception e) {
 					throw new Exception("elasticsearch update fail", e);
 				}
@@ -72,7 +70,7 @@ public final class EsApi {
 	    case "DELETE":
 		    if (!"".equals(id)) {
 		    	try {
-					return delete("sync" + "-" + db + "-"+ table, "default", id);
+					return delete(index, "default", id);
 				} catch (Exception e) {
 					
 				}
@@ -101,9 +99,6 @@ public final class EsApi {
 	 * @throws Exception 
 	 */
 	public boolean insert(String index, String type, String id, String content) throws Exception {
-		if (!index("sync-sdsw-sys_log")) {
-			System.out.println(setMappings("sync-sdsw-sys_log"));
-		}
 		Map<String, String> params = Collections.emptyMap();
 		HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
 		Response response = rs.performRequest("PUT", "/" + index + "/" + type + "/" + id, params, entity); 
@@ -119,9 +114,6 @@ public final class EsApi {
 	 * @throws Exception 
 	 */
 	public boolean update(String index, String type, String id, String content) throws Exception {
-		if (!index("sync-sdsw-sys_log")) {
-			System.out.println(setMappings("sync-sdsw-sys_log"));
-		}
 		Map<String, String> params = Collections.emptyMap();
 		HttpEntity entity = new NStringEntity(content, ContentType.APPLICATION_JSON);
 		Response response = rs.performRequest("PUT", "/" + index + "/" + type + "/" + id, params, entity); 

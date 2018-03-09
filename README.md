@@ -1,10 +1,10 @@
 ### **syncClient**
 
->   syncClient，数据实时同步中间件（阿里canal到kafka、redis、elasticsearch）！
+>   syncClient，数据实时同步中间件（同步mysql到kafka、redis、elasticsearch）！
 
- 本项目是打通canal、kafka的桥梁；  
+ 本项目使用canal，将mysql的表数据实时同步到kafka、redis、elasticsearch；  
  基本原理：  
- canal解析binlog的数据，由syncClient订阅，然后实时推送到kafka或者redis、elasticsearch；如果kafka、redis服务异常，syncClient会回滚操作；canal、kafka、redis异常退出，都不会影响数据的传输；
+ canal解析binlog的数据，由syncClient订阅，然后实时推送到kafka或者redis、elasticsearch；如果kafka、redis、es服务异常，syncClient会回滚操作；canal、kafka、redis、es的异常退出，都不会影响数据的传输；
 
 
 ---
@@ -165,6 +165,6 @@ Elasticsearch同步数据的head中有id字段；
 Mysql 同步到 Elasticsearch注意事项：
 
 1、表需要有一个唯一id主键；  
-2、表时间字段datetime会转为es的时间字段，其他字段对应es的文本类型；
-3、主键、时间字段禁止修改，其他字段尽量提前规划好；  
+2、表时间字段datetime会转为es的时间字段，其他字段对应es的文本类型；  
+3、主键、时间字段禁止修改，其他字段尽量提前规划好；   
 

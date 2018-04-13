@@ -21,15 +21,18 @@ public class RedisApi {
 
 	public RedisApi(String name) {
 		canal_destination = name;
-		JedisPoolConfig config = new JedisPoolConfig();
-		config.setMaxTotal(1000);
-		config.setMaxIdle(50);
-		config.setMaxWaitMillis(1000 * 10);
-		config.setTestOnBorrow(false);
-		config.setTestWhileIdle(false);
-		config.setBlockWhenExhausted(true);
-		config.setMinEvictableIdleTimeMillis(300000);
-		pool = new JedisPool(config, GetProperties.target.get(canal_destination).ip, GetProperties.target.get(canal_destination).port, 1000 * 10);
+		if (pool == null) {
+			JedisPoolConfig config = new JedisPoolConfig();
+			config.setMaxTotal(10);
+			config.setMaxIdle(5);
+			config.setMaxWaitMillis(1000 * 10);
+			config.setTestOnBorrow(true);
+			config.setTestWhileIdle(true);
+			config.setBlockWhenExhausted(true);
+			config.setMinEvictableIdleTimeMillis(1800000);
+			config.setTimeBetweenEvictionRunsMillis(300000);
+			pool = new JedisPool(config, GetProperties.target.get(canal_destination).ip, GetProperties.target.get(canal_destination).port, 1000 * 10);
+		}
 	}
 
 	/**

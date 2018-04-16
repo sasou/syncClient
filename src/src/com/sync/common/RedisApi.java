@@ -23,14 +23,13 @@ public class RedisApi {
 		canal_destination = name;
 		if (pool == null) {
 			JedisPoolConfig config = new JedisPoolConfig();
-			config.setMaxTotal(10);
-			config.setMaxIdle(5);
-			config.setMaxWaitMillis(1000 * 10);
-			config.setTestOnBorrow(true);
-			config.setTestWhileIdle(true);
 			config.setBlockWhenExhausted(true);
-			config.setMinEvictableIdleTimeMillis(1800000);
-			config.setTimeBetweenEvictionRunsMillis(300000);
+			config.setEvictionPolicyClassName("org.apache.commons.pool2.impl.DefaultEvictionPolicy");
+			config.setJmxEnabled(true);
+			config.setMaxTotal(2);
+			config.setMaxIdle(1);
+			config.setMaxWaitMillis(1000 * 100);
+			config.setTestOnBorrow(true);
 			pool = new JedisPool(config, GetProperties.target.get(canal_destination).ip, GetProperties.target.get(canal_destination).port, 1000 * 10);
 		}
 	}
@@ -41,7 +40,7 @@ public class RedisApi {
 	 * @param pool
 	 * @param redis
 	 */
-	public void returnResource(JedisPool pool, Jedis redis) {
+	public void returnResource(Jedis redis) {
 		if (redis != null) {
 			redis.close();
 		}
@@ -60,9 +59,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			value = jedis.get(key);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 		return value;
 	}
 
@@ -80,9 +79,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			value = jedis.zrange(key, 0, -1);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 		return value;
 	}
 
@@ -100,9 +99,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			value = jedis.lrange(key, 0, -1);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 		return value;
 	}
 
@@ -119,9 +118,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.set(key, value);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -137,9 +136,9 @@ public class RedisApi {
 			long score = (jedis.exists(key)) ? (jedis.zcard(key)) : 0;
 			jedis.zadd(key, score, member);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -154,9 +153,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.lpush(key, member);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -171,9 +170,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.rpush(key, member);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -190,9 +189,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			blag = jedis.exists(key);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 		return blag;
 	}
 
@@ -208,9 +207,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.del(key);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -225,9 +224,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.lrem(key, 1, member);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -242,9 +241,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.zrem(key, member);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -259,9 +258,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.expire(key, num * 60);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -275,9 +274,9 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.incr(key);
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 
 	/**
@@ -291,8 +290,8 @@ public class RedisApi {
 			jedis = pool.getResource();
 			jedis.flushDB();
 		} catch (JedisConnectionException e) {
-			returnResource(pool, jedis);
 			throw new Exception(" redis link fail", e);
 		}
+		returnResource(jedis);
 	}
 }

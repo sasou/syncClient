@@ -8,13 +8,15 @@ package com.sync.common;
  */
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Calendar;
 
 /**
  * write logString
  * 
  * @param logString
- * @author tower
  */
 public class WriteLog {
 	public static String base = null;
@@ -62,7 +64,6 @@ public class WriteLog {
 	 * 
 	 * @param i
 	 * @return
-	 * @author tower
 	 */
 	public static String addZero(int i) {
 		if (i < 10) {
@@ -71,6 +72,37 @@ public class WriteLog {
 		} else {
 			return String.valueOf(i);
 		}
+	}
+	
+	
+	/**
+	 * eString
+	 * 
+	 * @param object e
+	 * @return string
+	 */
+	public static String eString(Exception e) {
+		StringWriter sw = null;
+	    PrintWriter pw = null;
+	    try {
+	        sw = new StringWriter();
+	        pw =  new PrintWriter(sw);
+	        e.printStackTrace(pw);
+	        pw.flush();
+	        sw.flush();
+	    } finally {
+	        if (sw != null) {
+	            try {
+	                sw.close();
+	            } catch (IOException e1) {
+	                e1.printStackTrace();
+	            }
+	        }
+	        if (pw != null) {
+	            pw.close();
+	        }
+	    }
+	 	return sw.toString();
 	}
 
 }

@@ -26,8 +26,8 @@ public class RedisApi {
 			config.setBlockWhenExhausted(true);
 			config.setEvictionPolicyClassName("org.apache.commons.pool2.impl.DefaultEvictionPolicy");
 			config.setJmxEnabled(true);
-			config.setMaxTotal(2);
-			config.setMaxIdle(1);
+			config.setMaxTotal(10);
+			config.setMaxIdle(5);
 			config.setMaxWaitMillis(1000 * 100);
 			config.setTestOnBorrow(true);
 			pool = new JedisPool(config, GetProperties.target.get(canal_destination).ip, GetProperties.target.get(canal_destination).port, 1000 * 10);

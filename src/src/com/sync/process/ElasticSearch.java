@@ -138,7 +138,7 @@ public class ElasticSearch implements Runnable {
 						WriteLog.write(canal_destination + ".access", thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (Exception e) {
-					WriteLog.write(canal_destination + ".error", thread_name + e.getMessage());
+					WriteLog.write(canal_destination + ".error", thread_name + "es link failure!"+ WriteLog.eString(e));
 					ret = false;
 				}
 			}

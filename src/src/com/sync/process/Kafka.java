@@ -147,7 +147,7 @@ public class Kafka implements Runnable {
 						WriteLog.write(canal_destination + ".access", thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (InterruptedException | ExecutionException e) {
-					WriteLog.write(canal_destination + ".error", thread_name + "kafka link failure!");
+					WriteLog.write(canal_destination + ".error", thread_name + "kafka link failure!"+ WriteLog.eString(e));
 					ret = false;
 				}
 			}

@@ -77,6 +77,9 @@ public class GetProperties {
 					if ("elasticsearch".equals(target_tmp.type)) {
 						target_tmp.setPort(9200);
 					}
+					if ("httpmq".equals(target_tmp.type)) {
+						target_tmp.setPort(1218);
+					}
 					tmp = String.valueOf(p.get(canal.destination[i] + ".target_port"));
 					if (!"".equals(tmp)) {
 						target_tmp.setPort(Integer.parseInt(tmp));

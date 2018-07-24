@@ -32,11 +32,13 @@ public final class task {
 					case "elasticsearch":
 						new Thread(new ElasticSearch(GetProperties.canal.destination[i])).start();
 						break;
+					case "httpmq":
+						new Thread(new Httpmq(GetProperties.canal.destination[i])).start();
+						break;
 					default:
 						System.out.println("error:not support type!");
 						break;
 					}
-
 				}
 			}
 		}

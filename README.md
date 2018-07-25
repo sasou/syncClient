@@ -1,10 +1,10 @@
 ### **syncClient**
 
->   syncClient，数据实时同步中间件（同步mysql到kafka、redis、elasticsearch）！
+>   syncClient，数据实时同步中间件（同步mysql到kafka、redis、elasticsearch、httpmq）！
 
  本项目使用canal，将mysql的表数据实时同步到kafka、redis、elasticsearch；  
  基本原理：  
- canal解析binlog的数据，由syncClient订阅，然后实时推送到kafka或者redis、elasticsearch；如果kafka、redis、es服务异常，syncClient会回滚操作；canal、kafka、redis、es的异常退出，都不会影响数据的传输；
+ canal解析binlog的数据，由syncClient订阅，然后实时推送到kafka或者redis、elasticsearch、httpmq；如果kafka、redis、es、httpmq服务异常，syncClient会回滚操作；canal、kafka、redis、es、httpmq的异常退出，都不会影响数据的传输；
 
 
 ---
@@ -30,19 +30,25 @@ canal.filter=           # canal 同步filter设置，默认空使用canal配置;
 
 #kafka or redis 服务配置，前缀对应canal.destination的多个destinations;
 #redis
-sdsw.target_type=redis  # 同步插件类型 kafka or redis  
-sdsw.target_ip=         # kafka 服务端 ip;   
-sdsw.target_port=       # kafka 端口：默认9092;   
+sdsw.target_type=redis  # 同步插件类型 kafka or redis、elasticsearch、httpmq 
+sdsw.target_ip=         # redis服务端 ip;   
+sdsw.target_port=       # redis端口：默认6379; 
+sdsw.target_deep=       # 同步到集合、队列的名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1；
 
 #kafka
-epos.target_type=kafka  # kafka 端口：默认9092;   
-epos.target_ip=         # kafka 端口：默认9092;   
-epos.target_port=       # kafka 端口：默认9092;   
+epos.target_type=kafka  # 同步插件类型 kafka  
+epos.target_ip=         # kafka服务端 ip;   
+epos.target_port=       # kafka端口：默认9092;   
 
 #elasticsearch  
-es.target_type=elasticsearch  
-es.target_ip=10.5.3.66  
-es.target_port=  
+es.target_type=elasticsearch  # 同步插件类型elasticsearch  
+es.target_ip=10.5.3.66        # es服务端 ip; 
+es.target_port=               # es端口：默认9200; 
+
+#httpmq  
+hm.target_type=httpmq    # 同步插件类型 httpmq  
+hm.target_ip=10.5.3.66   # httpmq服务端 ip; 
+hm.target_port=1218      # httpmq端口：默认 1218  
 
 ---
 
@@ -57,7 +63,7 @@ search build
 
 **Kafka：**
 
-Topic规则：数据库的每个表有单独的topic，如数据库admin的user表，对应的kafka主题名为：sync_admin_user  
+Topic规则：对应配置项目target_deep指定的规则，比如：target_deep=4，数据库的每个表有单独的topic，如数据库admin的user表，对应的kafka主题名为：sync_admin_user  
 Topic数据字段：  
 
 	插入数据同步格式：
@@ -154,7 +160,7 @@ after：  INSERT（插入后）、UPDATE（修改后）的数据；
 
 **Redis：**
 
-List规则：数据库的每个表有单独的list，如数据库admin的user表，对应的redis list名为：sync_admin_user  
+List规则：对应配置项目target_deep指定的规则，比如：target_deep=4，数据库的每个表有单独的list，如数据库admin的user表，对应的redis list名为：sync_admin_user  
 
 **Elasticsearch**
 
@@ -168,3 +174,6 @@ Mysql 同步到 Elasticsearch注意事项：
 2、表时间字段datetime会转为es的时间字段，其他字段对应es的文本类型；  
 3、主键、时间字段禁止修改，其他字段尽量提前规划好；   
 
+**Httpmq：**
+
+List规则：对应配置项目target_deep指定的规则，比如：target_deep=4，数据库的每个表有单独的list，如数据库admin的user表，对应的redis list名为：sync_admin_user  

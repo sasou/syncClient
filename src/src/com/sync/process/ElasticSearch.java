@@ -20,6 +20,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
 import com.sync.common.EsApi;
 import com.sync.common.GetProperties;
+import com.sync.common.Tool;
 import com.sync.common.WriteLog;
 import com.alibaba.fastjson.JSON;
 
@@ -117,7 +118,7 @@ public class ElasticSearch implements Runnable {
 			head.put("type", eventType);
 			data.put("head", head);
 			
-			topic = "sync_" + entry.getHeader().getSchemaName() + "_" + entry.getHeader().getTableName();
+			topic = Tool.makeTargetName(canal_destination, entry.getHeader().getSchemaName(), entry.getHeader().getTableName());
 			no = (int) entry.getHeader().getLogfileOffset();
 			for (RowData rowData : rowChage.getRowDatasList()) {
 				if (eventType == EventType.DELETE) {

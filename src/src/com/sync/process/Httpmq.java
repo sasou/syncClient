@@ -16,6 +16,7 @@ import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
 import com.sync.common.GetProperties;
 import com.sync.common.HttpmqApi;
 import com.sync.common.RedisApi;
+import com.sync.common.Tool;
 import com.sync.common.WriteLog;
 import com.alibaba.fastjson.JSON;
 
@@ -110,7 +111,7 @@ public class Httpmq implements Runnable {
 			head.put("table", entry.getHeader().getTableName());
 			head.put("type", eventType);
 			data.put("head", head);
-			topic = "sync_" + canal_destination + "_" + entry.getHeader().getSchemaName() + "_" + entry.getHeader().getTableName();
+			topic = Tool.makeTargetName(canal_destination, entry.getHeader().getSchemaName(), entry.getHeader().getTableName());
 			no = (int) entry.getHeader().getLogfileOffset();
 			for (RowData rowData : rowChage.getRowDatasList()) {
 				if (eventType == EventType.DELETE) {
@@ -139,7 +140,7 @@ public class Httpmq implements Runnable {
 		}
 		return ret;
 	}
-
+	
 	private Map<String, Object> makeColumn(List<Column> columns) {
 		Map<String, Object> one = new HashMap<String, Object>();
 		for (Column column : columns) {

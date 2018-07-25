@@ -10,6 +10,7 @@ public final class TargetData {
 	public String type = "";
 	public String ip = "";
 	public int port = 0;
+	public int deep = 1;
 
 	/**
 	 * @return the type
@@ -55,4 +56,20 @@ public final class TargetData {
 	public void setPort(int port) {
 		this.port = port;
 	}
+	
+	/**
+	 * @return the deep
+	 */
+	public int getDeep() {
+		return deep;
+	}
+
+	/**
+	 * @param deep
+	 *            the deep to set
+	 */
+	public void setDeep(int deep) {
+		this.deep = deep;
+	}
+	
 }

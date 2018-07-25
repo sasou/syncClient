@@ -84,6 +84,10 @@ public class GetProperties {
 					if (!"".equals(tmp)) {
 						target_tmp.setPort(Integer.parseInt(tmp));
 					}
+					tmp = String.valueOf(p.get(canal.destination[i] + ".target_deep"));
+					if (!"".equals(tmp)) {
+						target_tmp.setDeep(Integer.parseInt(tmp));
+					}
 					target.put(canal.destination[i], target_tmp);
 				}
 			}

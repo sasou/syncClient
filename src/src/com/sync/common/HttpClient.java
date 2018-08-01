@@ -117,9 +117,9 @@ public class HttpClient {
                 result = sbf.toString();
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+        	throw new Exception(" http MalformedURLException fail", e);
         } catch (IOException e) {
-            e.printStackTrace();
+        	throw new Exception(" http IOException fail", e);
         } finally {
             // ¹Ø±Õ×ÊÔ´
             if (null != br) {

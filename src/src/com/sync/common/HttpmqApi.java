@@ -17,7 +17,7 @@ public class HttpmqApi {
 	 */
 	public boolean put(String type, String content) throws Exception {
 		String ret = null;
-        ret = HttpClient.doGet(url + "opt=put&name=" + type + "&data=" + content);
+        ret = HttpClient.doPost(url + "opt=put&name=" + type, "data=" + content);
 		if (ret.indexOf("HTTPMQ_PUT_OK") != -1) {
 			return true;
 		}

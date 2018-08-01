@@ -1,5 +1,8 @@
 package com.sync.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class HttpmqApi {
 	
 	private String canal_destination = null;
@@ -17,7 +20,7 @@ public class HttpmqApi {
 	 */
 	public boolean put(String type, String content) throws Exception {
 		String ret = null;
-        ret = HttpClient.doPost(url + "opt=put&name=" + type, "data=" + content);
+        ret = HttpClient.sendPost(url + "charset=utf-8&opt=put&name=" + type, content);
 		if (ret.indexOf("HTTPMQ_PUT_OK") != -1) {
 			return true;
 		}

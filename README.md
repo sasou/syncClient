@@ -32,8 +32,8 @@ canal.filter=           # canal 同步filter设置，默认空使用canal配置;
 #redis
 sdsw.target_type=redis  # 同步插件类型 kafka or redis、elasticsearch、httpmq 
 sdsw.target_ip=         # redis服务端 ip;   
-sdsw.target_port=       # redis端口：默认6379; 
-sdsw.target_deep=       # 同步到集合、队列的名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1；
+sdsw.target_port=       # redis端口：默认6379;   
+sdsw.target_deep=       # 同步到集合、队列的名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1；  
 
 #kafka
 epos.target_type=kafka  # 同步插件类型 kafka  

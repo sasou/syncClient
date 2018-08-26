@@ -50,8 +50,6 @@ public class Httpmq implements Runnable {
 			connector.subscribe();
 		}
 
-		connector.rollback();
-
 		try {
 			httpmqApi = new HttpmqApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");

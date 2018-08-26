@@ -60,8 +60,6 @@ public class Kafka implements Runnable {
 			connector.subscribe();
 		}
 
-		connector.rollback();
-
 		try {
 			producer = new KafkaProducer<>(props);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");

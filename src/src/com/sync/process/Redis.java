@@ -49,8 +49,6 @@ public class Redis implements Runnable {
 			connector.subscribe();
 		}
 
-		connector.rollback();
-
 		try {
 			RedisPool = new RedisApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
@@ -123,6 +121,7 @@ public class Redis implements Runnable {
 				}
 				String text = JSON.toJSONString(data);
 				try {
+					System.out.print(text);
 					RedisPool.rpush(topic, text);
 					if (GetProperties.system_debug > 0) {
 						WriteLog.write(canal_destination + ".access", thread_name + "data(" + topic + "," + no + ", " + text + ")");

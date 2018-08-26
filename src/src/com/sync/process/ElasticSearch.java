@@ -54,8 +54,6 @@ public class ElasticSearch implements Runnable {
 			connector.subscribe();
 		}
 
-		connector.rollback();
-
 		try {
 			es = new EsApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");

@@ -48,11 +48,6 @@ public class GetProperties {
 		canal.setUsername(String.valueOf(p.get("canal.username")));
 		canal.setPassword(String.valueOf(p.get("canal.password")));
 
-		tmp = String.valueOf(p.get("canal.filter"));
-		if (!"".equals(tmp)) {
-			canal.setFilter(tmp);
-		}
-
 		// target
 		if (canal.destination != null) {
 			int num = canal.destination.length;

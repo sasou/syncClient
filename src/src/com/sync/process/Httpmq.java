@@ -15,7 +15,6 @@ import com.alibaba.otter.canal.protocol.CanalEntry.RowChange;
 import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
 import com.sync.common.GetProperties;
 import com.sync.common.HttpmqApi;
-import com.sync.common.RedisApi;
 import com.sync.common.Tool;
 import com.sync.common.WriteLog;
 import com.alibaba.fastjson.JSON;
@@ -43,15 +42,9 @@ public class Httpmq implements Runnable {
 				new InetSocketAddress(GetProperties.canal.ip, GetProperties.canal.port), canal_destination,
 				GetProperties.canal.username, GetProperties.canal.password);
 
-		connector.connect();
-		if (!"".equals(GetProperties.canal.filter)) {
-			System.out.println(111);
-			connector.subscribe(GetProperties.canal.filter);
-		} else {
-			connector.subscribe();
-		}
-
 		try {
+			connector.connect();
+			connector.subscribe();
 			httpmqApi = new HttpmqApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
@@ -66,6 +59,8 @@ public class Httpmq implements Runnable {
 					}
 				}
 			}
+		} catch (Exception e) {
+			WriteLog.write(canal_destination, thread_name + "canal link failure!");
 		} finally {
 			if (connector != null) {
 				connector.disconnect();
@@ -75,13 +70,7 @@ public class Httpmq implements Runnable {
 	}
 
 	public void run() {
-		while (true) {
-			try {
-				process();
-			} catch (Exception e) {
-				WriteLog.write(canal_destination, thread_name + "canal link failure!");
-			}
-		}
+		process();
 	}
 
 	private boolean syncEntry(List<Entry> entrys) {

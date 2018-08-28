@@ -12,7 +12,6 @@ public final class CanalData {
 	public String[] destination = null;
 	public String username = "";
 	public String password = "";
-	public String filter = "";
 
 	/**
 	 * @return the ip
@@ -87,21 +86,6 @@ public final class CanalData {
 	 */
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	/**
-	 * @return the filter
-	 */
-	public String getFilter() {
-		return filter;
-	}
-
-	/**
-	 * @param filter
-	 *            the filter to set
-	 */
-	public void setFilter(String filter) {
-		this.filter = filter;
 	}
 
 }

@@ -42,14 +42,9 @@ public class Redis implements Runnable {
 				new InetSocketAddress(GetProperties.canal.ip, GetProperties.canal.port), canal_destination,
 				GetProperties.canal.username, GetProperties.canal.password);
 
-		connector.connect();
-		if (!"".equals(GetProperties.canal.filter)) {
-			connector.subscribe(GetProperties.canal.filter);
-		} else {
-			connector.subscribe();
-		}
-
 		try {
+			connector.connect();
+			connector.subscribe();
 			RedisPool = new RedisApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
@@ -64,6 +59,8 @@ public class Redis implements Runnable {
 					}
 				}
 			}
+		} catch (Exception e) {
+			WriteLog.write(canal_destination, thread_name + "canal link failure!");
 		} finally {
 			if (connector != null) {
 				connector.disconnect();
@@ -73,13 +70,7 @@ public class Redis implements Runnable {
 	}
 
 	public void run() {
-		while (true) {
-			try {
-				process();
-			} catch (Exception e) {
-				WriteLog.write(canal_destination, thread_name + "canal link failure!");
-			}
-		}
+		process();
 	}
 
 	private boolean syncEntry(List<Entry> entrys) {
@@ -121,7 +112,6 @@ public class Redis implements Runnable {
 				}
 				String text = JSON.toJSONString(data);
 				try {
-					System.out.print(text);
 					RedisPool.rpush(topic, text);
 					if (GetProperties.system_debug > 0) {
 						WriteLog.write(canal_destination + ".access", thread_name + "data(" + topic + "," + no + ", " + text + ")");

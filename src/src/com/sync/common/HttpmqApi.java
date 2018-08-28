@@ -1,8 +1,5 @@
 package com.sync.common;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class HttpmqApi {
 	
 	private String canal_destination = null;

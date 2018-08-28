@@ -47,9 +47,10 @@ public class ElasticSearch implements Runnable {
 				new InetSocketAddress(GetProperties.canal.ip, GetProperties.canal.port), canal_destination,
 				GetProperties.canal.username, GetProperties.canal.password);
 
+		connector.connect();
+		connector.subscribe();
+		
 		try {
-			connector.connect();
-			connector.subscribe();
 			es = new EsApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
@@ -65,17 +66,23 @@ public class ElasticSearch implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			WriteLog.write(canal_destination, thread_name + "elasticsearch link failure!");
-		} finally {
-			if (connector != null) {
-				connector.disconnect();
-				connector = null;
-			}
+			WriteLog.write(canal_destination, thread_name + WriteLog.eString(e));
 		}
 	}
 
 	public void run() {
-		process();
+		while (true) {
+ 			try {
+ 				process();
+ 			} catch (Exception e) {
+ 				WriteLog.write(canal_destination, thread_name + "canal link failure!");
+ 			} finally {
+ 				if (connector != null) {
+ 					connector.disconnect();
+ 					connector = null;
+ 				}
+ 			}
+ 		}
 	}
 
 	private boolean syncEntry(List<Entry> entrys) {

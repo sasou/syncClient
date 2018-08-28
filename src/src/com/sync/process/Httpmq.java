@@ -42,9 +42,10 @@ public class Httpmq implements Runnable {
 				new InetSocketAddress(GetProperties.canal.ip, GetProperties.canal.port), canal_destination,
 				GetProperties.canal.username, GetProperties.canal.password);
 
+		connector.connect();
+		connector.subscribe();
+		
 		try {
-			connector.connect();
-			connector.subscribe();
 			httpmqApi = new HttpmqApi(canal_destination);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
@@ -60,17 +61,23 @@ public class Httpmq implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			WriteLog.write(canal_destination, thread_name + "canal link failure!");
-		} finally {
-			if (connector != null) {
-				connector.disconnect();
-				connector = null;
-			}
+			WriteLog.write(canal_destination, thread_name + WriteLog.eString(e));
 		}
 	}
 
 	public void run() {
-		process();
+		while (true) {
+ 			try {
+ 				process();
+ 			} catch (Exception e) {
+ 				WriteLog.write(canal_destination, thread_name + "canal link failure!");
+ 			} finally {
+ 				if (connector != null) {
+ 					connector.disconnect();
+ 					connector = null;
+ 				}
+ 			}
+ 		}
 	}
 
 	private boolean syncEntry(List<Entry> entrys) {

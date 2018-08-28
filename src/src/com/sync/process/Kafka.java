@@ -52,10 +52,11 @@ public class Kafka implements Runnable {
 		connector = CanalConnectors.newSingleConnector(
 				new InetSocketAddress(GetProperties.canal.ip, GetProperties.canal.port), canal_destination,
 				GetProperties.canal.username, GetProperties.canal.password);
-
+		
+		connector.connect();
+		connector.subscribe();
+		
 		try {
-			connector.connect();
-			connector.subscribe();
 			producer = new KafkaProducer<>(props);
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
 			while (true) {
@@ -71,21 +72,23 @@ public class Kafka implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			WriteLog.write(canal_destination, thread_name + "canal link failure!");
-		} finally {
-			if (connector != null) {
-				connector.disconnect();
-				connector = null;
-			}
-			if (producer != null) {
-				producer.close();
-				producer = null;
-			}
+			WriteLog.write(canal_destination, thread_name + WriteLog.eString(e));
 		}
 	}
 
 	public void run() {
-		process();
+		while (true) {
+ 			try {
+ 				process();
+ 			} catch (Exception e) {
+ 				WriteLog.write(canal_destination, thread_name + "canal link failure!");
+ 			} finally {
+ 				if (connector != null) {
+ 					connector.disconnect();
+ 					connector = null;
+ 				}
+ 			}
+ 		}
 	}
 
 	private boolean syncEntry(List<Entry> entrys) {

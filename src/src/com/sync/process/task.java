@@ -35,6 +35,9 @@ public final class task {
 					case "httpmq":
 						new Thread(new Httpmq(GetProperties.canal.destination[i])).start();
 						break;
+					case "cache":
+						new Thread(new Cache(GetProperties.canal.destination[i])).start();
+						break;
 					default:
 						System.out.println("error:not support type!");
 						break;

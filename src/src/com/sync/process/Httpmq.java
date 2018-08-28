@@ -45,6 +45,7 @@ public class Httpmq implements Runnable {
 
 		connector.connect();
 		if (!"".equals(GetProperties.canal.filter)) {
+			System.out.println(111);
 			connector.subscribe(GetProperties.canal.filter);
 		} else {
 			connector.subscribe();

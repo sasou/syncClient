@@ -28,6 +28,7 @@ import com.alibaba.fastjson.JSON;
  */
 public class Cache implements Runnable {
 	private RedisApi RedisPool = null;
+	private MemApi MemPool = null;
 	private CanalConnector connector = null;
 	private String thread_name = null;
 	private String canal_destination = null;
@@ -53,7 +54,7 @@ public class Cache implements Runnable {
 				RedisPool = new RedisApi(canal_destination);
 			}
 			if("memcached".equals(GetProperties.target.get(canal_destination).plugin)) {
-				new MemApi(canal_destination);
+				MemPool = new MemApi(canal_destination);
 			}
 			
 			WriteLog.write(canal_destination, thread_name + "Start-up success!");
@@ -126,7 +127,7 @@ public class Cache implements Runnable {
 							RedisPool.incr(sign + Tool.md5(iterator.next()));	
 						}
 						if("memcached".equals(GetProperties.target.get(canal_destination).plugin)) {
-							MemApi.incr(sign + Tool.md5(iterator.next()));	
+							MemPool.incr(sign + Tool.md5(iterator.next()));	
 						}
 					}
 					if (GetProperties.system_debug > 0) {

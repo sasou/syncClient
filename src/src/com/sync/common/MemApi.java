@@ -1,8 +1,13 @@
 package com.sync.common;
 
-import java.util.Date; 
-import com.danga.MemCached.MemCachedClient;
-import com.danga.MemCached.SockIOPool;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.MemcachedClientBuilder;
+import net.rubyeye.xmemcached.XMemcachedClientBuilder;
+import net.rubyeye.xmemcached.exception.MemcachedException;
+import net.rubyeye.xmemcached.utils.AddrUtil;
 
 /**
  * MemApi
@@ -16,157 +21,152 @@ public class MemApi {
     /**
      * MemCachedClient
      */
-    protected static MemCachedClient memCachedClient = null;
+    protected static MemcachedClient memCachedClient = null;
 
-    /**
-     * pool
-     */
-    static SockIOPool pool ;
  
     
    /**
-    * 保护型构造方法，不允许实例化�
+    *  MemApi
     */
    public MemApi(String name)
    {
        if (memCachedClient == null) {
-		   // 服务器列表和其权重，个人memcached地址和端口号
-		   String[] servers = {GetProperties.target.get(name).ip + ":" + GetProperties.target.get(name).port};
-		   Integer[] weights = {3}; 
-		
-		   // 获取socke连接池的实例对象
-		   pool = SockIOPool.getInstance(); 
-		   
-		   // 设置服务器信�?
-		   pool.setServers(servers);
-		   pool.setWeights(weights);
-		
-		   // 设置初始连接数�?�最小和�?大连接数以及�?大处理时�?
-		   pool.setInitConn(10);
-		   pool.setMinConn(50);
-		   pool.setMaxConn(500);
-		   pool.setMaxIdle(1000 * 60 * 60 * 6); 
-		
-		   // 设置主线程的睡眠时间
-		   pool.setMaintSleep(30); 
-		
-		   // 设置TCP的参数，连接超时�?
-		   pool.setNagle(false);
-		   pool.setSocketTO(3000);
-		   pool.setSocketConnectTO(0); 
-		
-		   // 初始化连接池
-		   pool.initialize();  
-		   
-			memCachedClient = new MemCachedClient();
-			memCachedClient.setPrimitiveAsString(true);
+    	   MemcachedClientBuilder  builder = new XMemcachedClientBuilder(AddrUtil.getAddresses(GetProperties.target.get(name).ip + ":" + GetProperties.target.get(name).port));
+    	   try {
+				memCachedClient = builder.build();
+				builder.setConnectionPoolSize(5);
+				memCachedClient.setEnableHeartBeat(false);
+			} catch (IOException e) {
+				
+			}
        }
    }
     
     /**
-     * 取指定的key是否存在
-     * @param key
-     * @return boolean
-     */
-    public static boolean exists(String key) {
-        return memCachedClient.keyExists(key);
-    } 
-
-    /**
-     * 添加�?个指定的值到缓存�?.
      * @param key
      * @param value
      * @return boolean
      * @throws Exception 
      */
-    public static boolean set(String key, Object value) throws Exception {
+    public boolean set(String key, Object value) throws Exception {
+    	boolean blag = false;
 		try {
-			return memCachedClient.set(key, value);
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
+			blag =  memCachedClient.set(key, 0, value);
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
     }
+    
     /**
-     * 添加�?个指定的值到缓存�?.
      * @param key
      * @param value
      * @param expiry
      * @return boolean
      * @throws Exception 
      */
-    public boolean set(String key, Object value, Date expiry) throws Exception{
+    public boolean set(String key, Object value, int expiry) throws Exception{
+    	boolean blag = false;
 		try {
-			return memCachedClient.set(key, value, expiry);
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
+			blag =  memCachedClient.set(key, expiry, value);
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
     }
 
     /**
-     * 向缓存添加键值对。注意：仅当缓存中不存在键时，才会添加成功�??
      * @param key
      * @param value
      * @return boolean
      * @throws Exception 
      */
-	public static boolean add(String key, Object value) throws Exception {
+	public boolean add(String key, Object value) throws Exception {
+		boolean blag = false;
 		try {
 			if (get(key) != null) {
-				return false;
+				return blag;
 			} else {
-				return memCachedClient.add(key, value);
+				blag = memCachedClient.add(key, 0, value);
 			}
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
 	}
 
     /**
-     * 替换�?个指定的值到缓存�?.
      * @param key
      * @param value
      * @return boolean
      * @throws Exception 
      */
-    public static boolean replace(String key, Object value) throws Exception {
+    public boolean replace(String key, Object value) throws Exception {
+    	boolean blag = false;
 		try {
-			return memCachedClient.replace(key, value);
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
+			blag = memCachedClient.replace(key, 0, value);
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
     }
 
 	/**
-	 * 根据键来替换Memcached内存缓存中已有的对应的�?�并设置逾期时间（即多长时间后该键�?�对从Memcached内存缓存中删除，比如�? new Date(1000*10)，则表示十秒之后从Memcached内存缓存中删除）�?
-	 * 注意：只有该键存在时，才会替换键相应的�?��??
      * @param key
      * @param value
      * @param expiry
      * @return boolean
 	 * @throws Exception 
 	 */
-    public static boolean replace(String key, Object value, Date expiry) throws Exception {
-		try {
-			return memCachedClient.replace(key, value, expiry);
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
+    public boolean replace(String key, Object value, int expiry) throws Exception {
+    	boolean blag = false;
+		try {		
+			blag = memCachedClient.replace(key, expiry, value);
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
      }     
 
     
 	/**
-	 * 根据键获取Memcached内存缓存管理系统中相应的�?
 	 * 
      * @param key
      * @return boolean
 	 * @throws Exception 
 	 */
-	public static String get(String key) throws Exception {
+	public String get(String key) throws Exception {
+		String blag = "";
 		try {
-			return memCachedClient.get(key).toString();
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
+			blag = memCachedClient.get(key).toString();
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
 	}
 	
 	/**
@@ -176,35 +176,41 @@ public class MemApi {
      * @return boolean
 	 * @throws Exception 
 	 */
-	public static long incr(String key) throws Exception {
+	public boolean incr(String key) throws Exception {
+		boolean blag = false;
 		try {
-			return memCachedClient.addOrIncr(key, 1);
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
+			long ret = memCachedClient.incr(key, 1, 1);
+			if (ret > 0) {
+				blag = true;
+			}
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
 	}
     
     /**
-     * 删除�?个指定的值到缓存�?.
      * @param key
      * @param value
      * @return boolean
      * @throws Exception 
      */
-    public static boolean delete(String key) throws Exception{
+    public boolean delete(String key) throws Exception{
+    	boolean blag = false;
 		try {
-			return memCachedClient.delete(key);
-		} catch (Exception e) {
-			throw new Exception(" memcached link fail", e);
-		}
-    }
-
-    /**
-     * close
-     * @return void
-     */
-    public static void close(){
-    	pool.shutDown();
+			blag = memCachedClient.delete(key);
+		} catch (MemcachedException e) {
+			throw new Exception("MemcachedClient operation fail");
+	    } catch (TimeoutException e) {
+	    	throw new Exception("MemcachedClient operation timeout");
+	    } catch (InterruptedException e) {
+			// ignore
+	    }
+		return blag;
     }
     
 }

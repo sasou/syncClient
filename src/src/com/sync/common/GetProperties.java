@@ -22,44 +22,48 @@ public class GetProperties {
 	// target
 	public static Map<String, TargetData> target = new HashMap<String, TargetData>();
 
-	public GetProperties() {
+	public static boolean update() {
 		// read config
-		ReadProperties readProperties = new ReadProperties();
-		Properties p = readProperties.readProperties();
+		Properties prop = ReadProperties.readProperties();
 		String tmp = "";
 
 		// debug
-		tmp = String.valueOf(p.get("system.debug"));
+		tmp = prop.getProperty("system.debug", "");
 		if (!"".equals(tmp)) {
 			system_debug = Integer.parseInt(tmp);
 		}
 		
 		// canal
-		tmp = String.valueOf(p.get("canal.ip"));
+		tmp = prop.getProperty("canal.ip", "");
 		if (!"".equals(tmp)) {
 			canal.setIp(tmp);
 		}
 
-		tmp = String.valueOf(p.get("canal.port"));
+		tmp = prop.getProperty("canal.port", "");
 		if (!"".equals(tmp)) {
 			canal.setPort(Integer.parseInt(tmp));
 		}
-		canal.setDestination(String.valueOf(p.get("canal.destination")));
-		canal.setUsername(String.valueOf(p.get("canal.username")));
-		canal.setPassword(String.valueOf(p.get("canal.password")));
+		canal.setDestination(prop.getProperty("canal.destination", ""));
+		canal.setUsername(prop.getProperty("canal.username", ""));
+		canal.setPassword(prop.getProperty("canal.password", ""));
 
 		// target
 		if (canal.destination != null) {
+			TargetData target_tmp = null;
 			int num = canal.destination.length;
 			if (num > 0) {
 				for (int i = 0; i < num; i++) {
-					TargetData target_tmp = new TargetData();
-
-					tmp = String.valueOf(p.get(canal.destination[i] + ".target_type"));
+					if (target.containsKey(canal.destination[i])) {
+						target_tmp = target.get(canal.destination[i]);
+					} else {
+						target_tmp = new TargetData();
+					}
+					
+					tmp = prop.getProperty(canal.destination[i] + ".target_type", "");
 					if (!"".equals(tmp)) {
 						target_tmp.setType(tmp);
 					}
-					tmp = String.valueOf(p.get(canal.destination[i] + ".target_ip"));
+					tmp = prop.getProperty(canal.destination[i] + ".target_ip", "");
 					if (!"".equals(tmp)) {
 						target_tmp.setIp(tmp);
 					}
@@ -75,17 +79,29 @@ public class GetProperties {
 					if ("httpmq".equals(target_tmp.type)) {
 						target_tmp.setPort(1218);
 					}
-					tmp = String.valueOf(p.get(canal.destination[i] + ".target_port"));
+					tmp = prop.getProperty(canal.destination[i] + ".target_port", "");
 					if (!"".equals(tmp)) {
 						target_tmp.setPort(Integer.parseInt(tmp));
 					}
-					tmp = String.valueOf(p.get(canal.destination[i] + ".target_deep"));
+					tmp = prop.getProperty(canal.destination[i] + ".target_deep", "");
 					if (!"".equals(tmp)) {
 						target_tmp.setDeep(Integer.parseInt(tmp));
+					}
+					if ("cache".equals(target_tmp.type)) {
+						target_tmp.setPlugin(prop.getProperty(canal.destination[i] + ".target_plugin", ""));
+						target_tmp.setFilter(prop.getProperty(canal.destination[i] + ".target_field_filter", ""));
+						target_tmp.setSign(prop.getProperty(canal.destination[i] + ".target_version_sign", ""));
 					}
 					target.put(canal.destination[i], target_tmp);
 				}
 			}
 		}
+		return true;
+	}
+	
+	public static String get(String key) {
+		// read config
+		Properties prop = ReadProperties.readProperties();
+		return prop.getProperty(key, "");
 	}
 }

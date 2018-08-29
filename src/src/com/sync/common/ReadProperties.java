@@ -15,20 +15,19 @@ import java.util.Properties;
  */
 public class ReadProperties {
 	static final String propertiesFilename = "SysConfig.properties";
-	Properties p = new Properties();
+	private static Properties props = new Properties();
 
-	public Properties readProperties() {
+	public static Properties readProperties() {
 		try {
-			InputStream inputStream = new BufferedInputStream(
-					new FileInputStream(System.getProperty("user.dir") + "/" + propertiesFilename));
+			InputStream inputStream = new BufferedInputStream(new FileInputStream(System.getProperty("user.dir") + "/" + propertiesFilename));
 			try {
-				p.load(inputStream);
+				props.load(inputStream);
 			} catch (IOException e) {
 
 			}
 		} catch (FileNotFoundException e) {
 
 		}
-		return p;
+		return props;
 	}
 }

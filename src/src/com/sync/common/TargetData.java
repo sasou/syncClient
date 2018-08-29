@@ -11,6 +11,9 @@ public final class TargetData {
 	public String ip = "";
 	public int port = 0;
 	public int deep = 1;
+	public String plugin = "";
+	public String filter = "";
+	public String sign = "";
 
 	/**
 	 * @return the type
@@ -72,4 +75,48 @@ public final class TargetData {
 		this.deep = deep;
 	}
 	
+	/**
+	 * @return the plugin
+	 */
+	public String getPlugin() {
+		return plugin;
+	}
+
+	/**
+	 * @param plugin
+	 *            the plugin to set
+	 */
+	public void setPlugin(String plugin) {
+		this.plugin = plugin;
+	}
+	
+	/**
+	 * @return the filter
+	 */
+	public String getFilter() {
+		return filter;
+	}
+
+	/**
+	 * @param filter
+	 *            the filter to set
+	 */
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
+	
+	/**
+	 * @return the sign
+	 */
+	public String getSign() {
+		return sign;
+	}
+
+	/**
+	 * @param sign
+	 *            the sign to set
+	 */
+	public void setSign(String sign) {
+		this.sign = sign;
+	}
 }

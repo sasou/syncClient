@@ -12,7 +12,7 @@ public final class task {
 
 	public static void main(String[] args) {
 		// init
-		new GetProperties();
+		GetProperties.update();
 		if (GetProperties.canal.destination == null) {
 			System.out.println("error:canal destination is null!");
 			return;
@@ -45,6 +45,7 @@ public final class task {
 				}
 			}
 		}
+		new Thread(new Prop()).start();
 	}
 
 }

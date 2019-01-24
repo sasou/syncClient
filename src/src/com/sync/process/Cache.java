@@ -124,24 +124,25 @@ public class Cache implements Runnable {
 					updateColumn(versionField, rowData.getBeforeColumnsList(), table);
 					updateColumn(versionField, rowData.getAfterColumnsList(), table);
 				}
-				String text = JSON.toJSONString(versionField);
-				try {
-					Iterator<String> iterator = versionField.iterator();
-					while (iterator.hasNext()) {
-						if("redis".equals(GetProperties.target.get(canal_destination).plugin)) {
-							RedisPool.incr(sign + Tool.md5(iterator.next()));	
-						}
-						if("memcached".equals(GetProperties.target.get(canal_destination).plugin)) {
-							MemPool.incr(sign + Tool.md5(iterator.next()));	
-						}
+			}
+			
+			try {
+				Iterator<String> iterator = versionField.iterator();
+				while (iterator.hasNext()) {
+					if("redis".equals(GetProperties.target.get(canal_destination).plugin)) {
+						RedisPool.incr(sign + Tool.md5(iterator.next()));	
 					}
-					if (GetProperties.system_debug > 0) {
-						WriteLog.write(canal_destination + ".access", thread_name + "data(" + text + ")");
+					if("memcached".equals(GetProperties.target.get(canal_destination).plugin)) {
+						MemPool.incr(sign + Tool.md5(iterator.next()));	
 					}
-				} catch (Exception e) {
-					WriteLog.write(canal_destination + ".error", thread_name + "redis link failure!" + WriteLog.eString(e));
-					ret = false;
 				}
+				if (GetProperties.system_debug > 0) {
+					String text = JSON.toJSONString(versionField);
+					WriteLog.write(canal_destination + ".access", thread_name + "data(" + text + ")");
+				}
+			} catch (Exception e) {
+				WriteLog.write(canal_destination + ".error", thread_name + "cache link failure!" + WriteLog.eString(e));
+				ret = false;
 			}
 			versionField.clear();
 			versionField = null;

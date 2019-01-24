@@ -198,6 +198,11 @@ Mysql 同步到 Elasticsearch注意事项：
 
 List规则：对应配置项目target_deep指定的规则，比如：target_deep=4，数据库的每个表有单独的list，如数据库admin的user表，对应的redis list名为：sync_admin_user  
 
+
 **Cache：**
 
 缓存同步插件：原理是根据数据库变更同步更新表及字段的版本号，业务sdk根据版本号变化判断是否需要更新数据。同步开发了缓存配置管理中心、缓存版本调用sdk（未开源）；  
+
+
+<a href="https://info.flagcounter.com/AEYx"><img src="https://s11.flagcounter.com/count2/AEYx/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_10/viewers_0/labels_1/pageviews_1/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+

@@ -24,44 +24,44 @@ system.debug=1          # 是否开始调试：1未开启，0为关闭（线上�
 #canal server  
 canal.ip=127.0.0.1      # canal 服务端 ip;  
 canal.port=11111        # canal 服务端 端口：默认11111;  
-canal.destination=one   # canal 服务端项目（destinations），多个用逗号分隔，如：redis,kafka;  
-canal.username=         # canal 用户名：默认为空;   
+canal.destination=one   # canal 服务端项目（destinations），多个用逗号分隔，如：redis,kafka;    
+canal.username=         # canal 用户名：默认为空;     
 canal.password=         # canal 密码：默认为空;  
 
 #redis plugin  
-redis.target_type=redis  # 同步插件类型 kafka or redis、elasticsearch、httpmq 
+redis.target_type=redis  # 同步插件类型 kafka or redis、elasticsearch、httpmq;   
 redis.target_ip=         # redis服务端 ip;   
 redis.target_port=       # redis端口：默认6379;   
-redis.target_deep=       # 同步到redis的队列名称规则;
-redis.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据 
+redis.target_deep=       # 同步到redis的队列名称规则;  
+redis.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据;   
 
 #kafka plugin  
-kafka.target_type=kafka  # 同步插件类型 kafka  
+kafka.target_type=kafka  # 同步插件类型 kafka;    
 kafka.target_ip=         # kafka服务端 ip;   
 kafka.target_port=       # kafka端口：默认9092;   
-kafka.target_deep=       # 同步到kafka的集合名称规则;
-kafka.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据  
+kafka.target_deep=       # 同步到kafka的集合名称规则;  
+kafka.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据;    
 
 #elasticsearch plugin  
-es.target_type=elasticsearch  # 同步插件类型elasticsearch  
+es.target_type=elasticsearch  # 同步插件类型elasticsearch;    
 es.target_ip=10.5.3.66        # es服务端 ip; 
 es.target_port=               # es端口：默认9200; 
-es.target_deep=               # 同步到es的index名称规则;
-es.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据 
+es.target_deep=               # 同步到es的index名称规则;  
+es.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据;   
 
 #httpmq plugin  
-httpmq.target_type=httpmq    # 同步插件类型 httpmq  
+httpmq.target_type=httpmq    # 同步插件类型 httpmq;    
 httpmq.target_ip=10.5.3.66   # httpmq服务端 ip; 
 httpmq.target_port=1218      # httpmq端口：默认 1218  
-httpmq.target_deep=          # 同步到httpmq的队列名称规则;
-httpmq.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据 
+httpmq.target_deep=          # 同步到httpmq的队列名称规则;  
+httpmq.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据;   
 
 #cache plugin  
 cache.target_type=cache         # 缓存同步插件
-cache.target_plugin=memcached   # 缓存同步类型：暂支持memcached
+cache.target_plugin=memcached   # 缓存同步类型：暂支持memcached;  
 cache.target_ip=127.0.0.1       # 缓存服务器ip;   
 cache.target_port=11211         # 缓存服务器端口;   
-cache.target_filter_api=        # rest api地址，配置后会根据api返回的数据过滤同步数据   
+cache.target_filter_api=        # rest api地址，配置后会根据api返回的数据过滤同步数据;  
 cache.target_version_sign=      # 缓存key前缀  
 
 #target_deep参数影响topic规则，默认值1： 

@@ -58,7 +58,7 @@ httpmq.target_filter_api= # rest api地址，配置后会根据api返回的数�
 
 #cache plugin  
 cache.target_type=cache         # 缓存同步插件
-cache.target_plugin=memcached   # 缓存同步类型：暂支持memcached;  
+cache.target_plugin=memcached   # 缓存同步类型：暂支持redis、memcached缓存服务器;  
 cache.target_ip=127.0.0.1       # 缓存服务器ip;   
 cache.target_port=11211         # 缓存服务器端口;   
 cache.target_filter_api=        # rest api地址，配置后会根据api返回的数据过滤同步数据;  

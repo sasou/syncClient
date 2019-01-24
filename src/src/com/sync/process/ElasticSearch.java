@@ -90,8 +90,13 @@ public class ElasticSearch implements Runnable {
 		int no = 0;
 		boolean ret = true;
 		for (Entry entry : entrys) {
-			if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN
-					|| entry.getEntryType() == EntryType.TRANSACTIONEND) {
+			EntryType type = entry.getEntryType();
+			if (type == EntryType.TRANSACTIONBEGIN ||  type== EntryType.TRANSACTIONEND) {
+				continue;
+			}
+			String db = entry.getHeader().getSchemaName();
+			String table = entry.getHeader().getTableName();
+			if (!Tool.checkFilter(canal_destination, db, table)) {
 				continue;
 			}
 			RowChange rowChage = null;
@@ -107,12 +112,11 @@ public class ElasticSearch implements Runnable {
 			Map<String, Object> head = new HashMap<String, Object>();
 			head.put("binlog_file", entry.getHeader().getLogfileName());
 			head.put("binlog_pos", entry.getHeader().getLogfileOffset());
-			head.put("db", entry.getHeader().getSchemaName());
-			head.put("table", entry.getHeader().getTableName());
+			head.put("db", db);
+			head.put("table", table);
 			head.put("type", eventType);
 			data.put("head", head);
-			
-			topic = Tool.makeTargetName(canal_destination, entry.getHeader().getSchemaName(), entry.getHeader().getTableName());
+			topic = Tool.makeTargetName(canal_destination, db, table);
 			no = (int) entry.getHeader().getLogfileOffset();
 			for (RowData rowData : rowChage.getRowDatasList()) {
 				if (eventType == EventType.DELETE) {

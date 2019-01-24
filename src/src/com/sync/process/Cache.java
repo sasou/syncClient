@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.Message;
@@ -94,8 +96,12 @@ public class Cache implements Runnable {
 		String table = "";
 		boolean ret = true;
 		for (Entry entry : entrys) {
-			if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN
-					|| entry.getEntryType() == EntryType.TRANSACTIONEND) {
+			EntryType type = entry.getEntryType();
+			if (type == EntryType.TRANSACTIONBEGIN ||  type== EntryType.TRANSACTIONEND) {
+				continue;
+			}
+			table = entry.getHeader().getSchemaName() + "." + entry.getHeader().getTableName();
+			if (".".equals(table)) {
 				continue;
 			}
 			RowChange rowChage = null;
@@ -108,7 +114,6 @@ public class Cache implements Runnable {
 
 			EventType eventType = rowChage.getEventType();
 			HashSet<String> versionField = new HashSet<String>();
-			table = entry.getHeader().getSchemaName() + "." + entry.getHeader().getTableName();
 			versionField.add(table);
 			for (RowData rowData : rowChage.getRowDatasList()) {
 				if (eventType == EventType.DELETE) {
@@ -144,11 +149,17 @@ public class Cache implements Runnable {
 		return ret;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void updateColumn(HashSet<String> versionField, List<Column> columns, String table) {
 		for (Column column : columns) {
 			String key = table + "." + column.getName();
-			if (column.getIsKey() || (GetProperties.target.get(canal_destination).filter.indexOf(key) != -1)) {
+			if (column.getIsKey()) {
 				versionField.add(key + "." + column.getValue());
+			} else {
+				 Map field = (Map) GetProperties.target.get(canal_destination).filterMap.get(table);
+				 if (field != null && field.containsKey(column.getName())) {
+					 versionField.add(key + "." + column.getValue());
+				 }
 			}
 		}
 	}

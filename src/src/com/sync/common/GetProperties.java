@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sync.common.ReadProperties;
 
 /**
@@ -22,6 +23,7 @@ public class GetProperties {
 	// target
 	public static Map<String, TargetData> target = new HashMap<String, TargetData>();
 
+	@SuppressWarnings("unchecked")
 	public static boolean update() {
 		// read config
 		Properties prop = ReadProperties.readProperties();
@@ -87,15 +89,29 @@ public class GetProperties {
 					if (!"".equals(tmp)) {
 						target_tmp.setDeep(Integer.parseInt(tmp));
 					}
+					tmp = prop.getProperty(canal.destination[i] + ".target_filter_api", "");
+					target_tmp.setFilter(tmp);
+					if (!"".equals(tmp)) {
+						try {
+							String json = HttpClient.sendGet(tmp, "");
+							@SuppressWarnings("rawtypes")
+							Map filterMap = new HashMap();
+							syncCache(json, filterMap);
+							target_tmp.setFilterMap(filterMap);
+						} catch (Exception e) {
+
+						}
+					}
+					
 					if ("cache".equals(target_tmp.type)) {
 						target_tmp.setPlugin(prop.getProperty(canal.destination[i] + ".target_plugin", ""));
-						target_tmp.setFilter(prop.getProperty(canal.destination[i] + ".target_field_filter", ""));
 						target_tmp.setSign(prop.getProperty(canal.destination[i] + ".target_version_sign", ""));
 					}
 					target.put(canal.destination[i], target_tmp);
 				}
 			}
 		}
+		prop.clear();
 		return true;
 	}
 	
@@ -104,4 +120,31 @@ public class GetProperties {
 		Properties prop = ReadProperties.readProperties();
 		return prop.getProperty(key, "");
 	}
+	
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void syncCache(String jsonStr, Map<String, Map> cacheMap) {
+        JSONObject jsonobject = JSONObject.parseObject(jsonStr);
+        JSONObject db = (JSONObject) jsonobject.get("data");
+        for (String dbName : db.keySet()){   
+	        JSONObject table = (JSONObject) db.get(dbName);
+	        for (String tableName : table.keySet()){    
+	        	String key = dbName + "." + tableName;
+		        Map tableMap = null;
+		        if (cacheMap.containsKey(key)) {
+		        	tableMap = (Map) cacheMap.get(key);
+		        } else {
+		        	tableMap = new HashMap();
+		        	cacheMap.put(key, tableMap);
+		        }
+		        JSONObject field = (JSONObject) table.get(tableName);
+		        for (String fieldName : field.keySet()){  
+			        if (!tableMap.containsKey(fieldName)) {
+			        	tableMap.put(fieldName, "");
+			        }
+		        }
+	        }
+        }
+	}
+	
 }

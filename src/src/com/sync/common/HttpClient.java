@@ -38,14 +38,14 @@ public class HttpClient {
 				result += line;
 			}
 		} catch (Exception e) {
-			throw new Exception("httpmq link fail", e);
+			throw new Exception("http link fail", e);
 		} finally {
 			try {
 				if (in != null) {
 					in.close();
 				}
 			} catch (Exception e) {
-				throw new Exception("httpmq link fail", e);
+				throw new Exception("http link fail", e);
 			}
 		}
 		return result;
@@ -75,7 +75,7 @@ public class HttpClient {
 				}
 			}
 		} catch (Exception e) {
-			throw new Exception("httpmq link fail", e);
+			throw new Exception("http link fail", e);
 		}
 		return response;
 	}

@@ -3,6 +3,20 @@ package com.sync.common;
 import java.security.MessageDigest;
 
 public class Tool {
+	
+	public static boolean checkFilter(String destination, String db, String table) {
+		if ("".equals(db) || "".equals(table)) {
+			return false;
+		}
+		if (!"".equals(GetProperties.target.get(destination).filter)) {
+			String key = db + "." + table;
+			if (GetProperties.target.get(destination).filterMap.containsKey(key)) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
 
 	public static String makeTargetName(String canal_destination, String db, String table) {
 	    int type = GetProperties.target.get(canal_destination).deep;

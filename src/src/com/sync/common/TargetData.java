@@ -1,5 +1,8 @@
 package com.sync.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * TargetData
  * 
@@ -14,6 +17,9 @@ public final class TargetData {
 	public String plugin = "";
 	public String filter = "";
 	public String sign = "";
+	
+	@SuppressWarnings("rawtypes")
+	public Map filterMap = new HashMap();
 
 	/**
 	 * @return the type
@@ -119,4 +125,22 @@ public final class TargetData {
 	public void setSign(String sign) {
 		this.sign = sign;
 	}
+	
+	/**
+	 * @return the filterMap
+	 */
+	@SuppressWarnings("rawtypes")
+	public Map getFilterMap() {
+		return filterMap;
+	}
+
+	/**
+	 * @param filterMap
+	 *            the filterMap to set
+	 */
+	@SuppressWarnings("rawtypes")
+	public void setFilterMap(Map filterMap) {
+		this.filterMap = filterMap;
+	}
+
 }

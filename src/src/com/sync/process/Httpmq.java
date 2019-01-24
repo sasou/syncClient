@@ -81,12 +81,16 @@ public class Httpmq implements Runnable {
 	}
 
 	private boolean syncEntry(List<Entry> entrys) {
-		String topic = "";
 		int no = 0;
 		boolean ret = true;
 		for (Entry entry : entrys) {
-			if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN
-					|| entry.getEntryType() == EntryType.TRANSACTIONEND) {
+			EntryType type = entry.getEntryType();
+			if (type == EntryType.TRANSACTIONBEGIN ||  type== EntryType.TRANSACTIONEND) {
+				continue;
+			}
+			String db = entry.getHeader().getSchemaName();
+			String table = entry.getHeader().getTableName();
+			if (!Tool.checkFilter(canal_destination, db, table)) {
 				continue;
 			}
 			RowChange rowChage = null;
@@ -96,17 +100,17 @@ public class Httpmq implements Runnable {
 				throw new RuntimeException(
 						thread_name + "parser of eromanga-event has an error , data:" + entry.toString(), e);
 			}
-
+	
 			EventType eventType = rowChage.getEventType();
 			Map<String, Object> data = new HashMap<String, Object>();
 			Map<String, Object> head = new HashMap<String, Object>();
 			head.put("binlog_file", entry.getHeader().getLogfileName());
 			head.put("binlog_pos", entry.getHeader().getLogfileOffset());
-			head.put("db", entry.getHeader().getSchemaName());
-			head.put("table", entry.getHeader().getTableName());
+			head.put("db", db);
+			head.put("table", table);
 			head.put("type", eventType);
 			data.put("head", head);
-			topic = Tool.makeTargetName(canal_destination, entry.getHeader().getSchemaName(), entry.getHeader().getTableName());
+			String topic = Tool.makeTargetName(canal_destination, db, table);
 			no = (int) entry.getHeader().getLogfileOffset();
 			for (RowData rowData : rowChage.getRowDatasList()) {
 				if (eventType == EventType.DELETE) {
@@ -135,7 +139,7 @@ public class Httpmq implements Runnable {
 		}
 		return ret;
 	}
-	
+
 	private Map<String, Object> makeColumn(List<Column> columns) {
 		Map<String, Object> one = new HashMap<String, Object>();
 		for (Column column : columns) {

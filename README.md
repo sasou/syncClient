@@ -32,26 +32,37 @@ canal.password=         # canal 密码：默认为空;
 redis.target_type=redis  # 同步插件类型 kafka or redis、elasticsearch、httpmq 
 redis.target_ip=         # redis服务端 ip;   
 redis.target_port=       # redis端口：默认6379;   
-redis.target_deep=       # 同步到redis的队列名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1；  
+redis.target_deep=       # 同步到redis的队列名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1； 
+redis.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据 
 
 #kafka plugin  
 kafka.target_type=kafka  # 同步插件类型 kafka  
 kafka.target_ip=         # kafka服务端 ip;   
 kafka.target_port=       # kafka端口：默认9092;   
-kafka.target_deep=       # 同步到kafka的集合名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1； 
+kafka.target_deep=       # 同步到kafka的集合名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1；
+kafka.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据  
 
 #elasticsearch plugin  
 es.target_type=elasticsearch  # 同步插件类型elasticsearch  
 es.target_ip=10.5.3.66        # es服务端 ip; 
 es.target_port=               # es端口：默认9200; 
 es.target_deep=               # 同步到es的index名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1； 
+es.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据 
 
 #httpmq plugin  
 httpmq.target_type=httpmq    # 同步插件类型 httpmq  
 httpmq.target_ip=10.5.3.66   # httpmq服务端 ip; 
 httpmq.target_port=1218      # httpmq端口：默认 1218  
 httpmq.target_deep=          # 同步到httpmq的队列名称规则：1、sync_{项目名}_{db}_{table}; 2、sync_{项目名}_{db};1、sync_{项目名}; 4、sync_{db}_{table};  默认1； 
+httpmq.target_filter_api= # rest api地址，配置后会根据api返回的数据过滤同步数据 
 
+#cache plugin  
+cache.target_type=cache         # 缓存同步插件
+cache.target_plugin=memcached   # 缓存同步类型：暂支持memcached
+cache.target_ip=127.0.0.1       # 缓存服务器ip;   
+cache.target_port=11211         # 缓存服务器端口;   
+cache.target_filter_api=        # rest api地址，配置后会根据api返回的数据过滤同步数据  
+cache.target_version_sign=database: # 缓存key前缀
 ---
 
 **使用场景(基于日志增量订阅&消费支持的业务)：**
@@ -179,3 +190,7 @@ Mysql 同步到 Elasticsearch注意事项：
 **Httpmq：**
 
 List规则：对应配置项目target_deep指定的规则，比如：target_deep=4，数据库的每个表有单独的list，如数据库admin的user表，对应的redis list名为：sync_admin_user  
+
+**Cache：**
+
+缓存同步插件：原理是根据数据库变更同步更新表及字段的版本号，业务sdk根据版本号变化判断是否需要更新数据。同步开发了缓存配置管理中心、缓存版本调用sdk（未开源）；  

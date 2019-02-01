@@ -99,7 +99,7 @@ public class GetProperties {
 							syncCache(json, filterMap);
 							target_tmp.setFilterMap(filterMap);
 						} catch (Exception e) {
-
+						    System.out.println(e);
 						}
 					}
 					
@@ -125,7 +125,13 @@ public class GetProperties {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void syncCache(String jsonStr, Map<String, Map> cacheMap) {
         JSONObject jsonobject = JSONObject.parseObject(jsonStr);
-        JSONObject db = (JSONObject) jsonobject.get("data");
+        JSONObject db = null;
+	    try {
+	    	db = (JSONObject) jsonobject.get("data");
+		} catch (Exception e) {
+			return;
+		}
+        
         for (String dbName : db.keySet()){   
 	        JSONObject table = (JSONObject) db.get(dbName);
 	        for (String tableName : table.keySet()){    

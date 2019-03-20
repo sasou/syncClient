@@ -152,12 +152,12 @@ public class Cache implements Runnable {
 
 	@SuppressWarnings("rawtypes")
 	private void updateColumn(HashSet<String> versionField, List<Column> columns, String table) {
+		Map field = (Map) GetProperties.target.get(canal_destination).filterMap.get(table);
 		for (Column column : columns) {
 			String key = table + "." + column.getName();
 			if (column.getIsKey()) {
 				versionField.add(key + "." + column.getValue());
 			} else {
-				 Map field = (Map) GetProperties.target.get(canal_destination).filterMap.get(table);
 				 if (field != null && field.containsKey(column.getName())) {
 					 versionField.add(key + "." + column.getValue());
 				 }

@@ -38,6 +38,9 @@ public final class task {
 					case "cache":
 						new Thread(new Cache(GetProperties.canal.destination[i])).start();
 						break;
+					case "ssdb":
+						new Thread(new Ssdb(GetProperties.canal.destination[i])).start();
+						break;
 					default:
 						System.out.println("error:not support type!");
 						break;

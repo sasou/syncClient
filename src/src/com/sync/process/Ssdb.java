@@ -133,7 +133,7 @@ public class Ssdb implements Runnable {
 						WriteLog.write(canal_destination + ".access", thread_name + "data(" + topic + "," + no + ", " + text + ")");
 					}
 				} catch (Exception e) {
-					WriteLog.write(canal_destination + ".error", thread_name + "redis link failure!" + WriteLog.eString(e));
+					WriteLog.write(canal_destination + ".error", thread_name + "ssdb link failure!" + WriteLog.eString(e));
 					ret = false;
 				}
 			}

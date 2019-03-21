@@ -1,8 +1,6 @@
 package com.sync.common;
 
 
-import java.net.SocketException;
-
 import com.udpwork.ssdb.*;
 
 
@@ -17,11 +15,15 @@ public class SsdbApi {
 	private String canal_destination = null;
 	private static SSDB ssdb = null;
 
-	public SsdbApi(String name) throws Exception {
+	public SsdbApi(String name) {
 		canal_destination = name;
+	}
+	
+	public SSDB instance() throws Exception {
 		if (ssdb == null) {
 			ssdb = new SSDB(GetProperties.target.get(canal_destination).ip ,GetProperties.target.get(canal_destination).port, 1000 * 10);
 		}
+		return ssdb;
 	}
 
 
@@ -35,8 +37,15 @@ public class SsdbApi {
 	public String get(String key) throws Exception {
 		byte[] resp = null;
 		try {
-			resp = ssdb.get(key);
-		} catch (SocketException e) {
+			instance();
+			if (ssdb != null) {
+				resp = ssdb.get(key);
+			}
+		} catch (Exception e) {
+			if (ssdb != null) {
+				ssdb.close();
+				ssdb = null;
+			}
 			throw new Exception(" ssdb link fail", e);
 		}
 		return resp.toString();
@@ -52,8 +61,15 @@ public class SsdbApi {
 	 */
 	public void rpush(String key, String member) throws Exception {
 		try {
-			ssdb.request("qpush", key, member);
-		} catch (SocketException e) {
+			instance();
+			if (ssdb != null) {
+				ssdb.request("qpush", key, member);
+			}
+		} catch (Exception e) {
+			if (ssdb != null) {
+				ssdb.close();
+				ssdb = null;
+			}
 			throw new Exception(" ssdb link fail", e);
 		}
 	}

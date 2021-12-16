@@ -31,7 +31,7 @@ public class MemApi {
    public MemApi(String name)
    {
        if (memCachedClient == null) {
-    	   MemcachedClientBuilder  builder = new XMemcachedClientBuilder(AddrUtil.getAddresses(GetProperties.target.get(name).ip + ":" + GetProperties.target.get(name).port));
+    	   MemcachedClientBuilder  builder = new XMemcachedClientBuilder(AddrUtil.getAddresses(GetProperties.target.get(name).ip));
     	   try {
 				memCachedClient = builder.build();
 				builder.setConnectionPoolSize(5);
